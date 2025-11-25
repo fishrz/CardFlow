@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, DollarSign, FileText, Tag, Calendar, ArrowDownLeft, ArrowUpRight, CreditCard } from 'lucide-react';
+import { X, DollarSign, FileText, Tag, ArrowDownLeft, ArrowUpRight, CreditCard, Zap } from 'lucide-react';
 import { TransactionCategory, CATEGORY_CONFIG, CARD_COLORS } from '../types';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
+import DatePicker from './DatePicker';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
@@ -67,6 +68,18 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
 
   const selectedCard = cards.find(c => c.id === formData.cardId);
 
+  // Pay Full Balance handler
+  const handlePayFullBalance = () => {
+    if (selectedCard && selectedCard.currentBalance > 0) {
+      setFormData({ 
+        ...formData, 
+        amount: selectedCard.currentBalance,
+        description: 'Full balance payment'
+      });
+      toast.success('Full balance amount filled!');
+    }
+  };
+
   const inputClasses = `w-full px-4 py-3 rounded-xl transition-colors ${
     isLight 
       ? 'bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-violet-400' 
@@ -83,7 +96,7 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
       onClick={onClose}
       className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
         isLight ? 'bg-black/40' : 'bg-black/60'
-      } backdrop-blur-sm`}
+      } backdrop-blur-sm overflow-y-auto`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -91,7 +104,7 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-lg rounded-3xl overflow-hidden ${
+        className={`w-full max-w-lg rounded-3xl overflow-hidden my-4 ${
           isLight 
             ? 'bg-white shadow-2xl shadow-black/10' 
             : 'glass-strong'
@@ -202,10 +215,33 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
 
           {/* Amount */}
           <div>
-            <label className={labelClasses}>
-              <DollarSign className="w-4 h-4" />
-              Amount
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className={`flex items-center gap-2 text-sm ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+                <DollarSign className="w-4 h-4" />
+                Amount
+              </label>
+              
+              {/* Pay Full Balance Button - Only shows in payment mode with balance > 0 */}
+              {formData.isPayment && selectedCard && selectedCard.currentBalance > 0 && (
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handlePayFullBalance}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    isLight 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40' 
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  Pay Full (${selectedCard.currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })})
+                </motion.button>
+              )}
+            </div>
+            
             <div className="relative">
               <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-lg ${isLight ? 'text-slate-400' : 'text-zinc-400'}`}>$</span>
               <input
@@ -218,9 +254,14 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
               />
             </div>
             {selectedCard && (
-              <p className={`text-xs mt-2 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                Current balance: ${selectedCard.currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </p>
+              <div className={`flex items-center justify-between text-xs mt-2 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
+                <span>Current balance: ${selectedCard.currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                {formData.isPayment && formData.amount > 0 && (
+                  <span className={isLight ? 'text-emerald-600' : 'text-emerald-400'}>
+                    After payment: ${Math.max(0, selectedCard.currentBalance - formData.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </span>
+                )}
+              </div>
             )}
           </div>
 
@@ -273,19 +314,12 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
             </div>
           )}
 
-          {/* Date */}
-          <div>
-            <label className={labelClasses}>
-              <Calendar className="w-4 h-4" />
-              Date
-            </label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className={inputClasses}
-            />
-          </div>
+          {/* Date - Using new DatePicker */}
+          <DatePicker
+            label="Date"
+            value={formData.date}
+            onChange={(date) => setFormData({ ...formData, date })}
+          />
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">

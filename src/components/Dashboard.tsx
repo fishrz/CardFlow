@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
-import { Plus, CreditCard as CardIcon, TrendingUp, Calendar, Sparkles } from 'lucide-react';
+import { 
+  Plus, CreditCard as CardIcon, TrendingUp, Calendar, Sparkles,
+  Command, BarChart3, AlertTriangle, Receipt, Search
+} from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { CreditCard } from '../types';
@@ -15,13 +18,31 @@ interface DashboardProps {
   onEditCard: (card: CreditCard) => void;
   onAddTransaction: (cardId?: string) => void;
   onViewCard: (card: CreditCard) => void;
+  onOpenCommandPalette: () => void;
+  onOpenInsights: () => void;
+  onOpenDueDateAlerts: () => void;
+  onOpenAnnualFeeTracker: () => void;
+  onOpenCardSelector: () => void;
 }
 
-export default function Dashboard({ onAddCard, onEditCard, onAddTransaction, onViewCard }: DashboardProps) {
-  const { cards, getCardStats } = useStore();
+export default function Dashboard({ 
+  onAddCard, 
+  onEditCard, 
+  onAddTransaction, 
+  onViewCard,
+  onOpenCommandPalette,
+  onOpenInsights,
+  onOpenDueDateAlerts,
+  onOpenAnnualFeeTracker,
+  onOpenCardSelector,
+}: DashboardProps) {
+  const { cards, getCardStats, getUpcomingPayments } = useStore();
   const { theme } = useThemeStore();
   const stats = getCardStats();
   const isLight = theme === 'light';
+  
+  // Check for urgent payments
+  const urgentPayments = getUpcomingPayments().filter(p => p.daysUntilDue <= 7 && p.card.currentBalance > 0);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,7 +77,7 @@ export default function Dashboard({ onAddCard, onEditCard, onAddTransaction, onV
         className="max-w-7xl mx-auto"
       >
         {/* Header */}
-        <motion.header variants={itemVariants} className="mb-12">
+        <motion.header variants={itemVariants} className="mb-8">
           <div className="flex items-center justify-between">
             <div>
               <motion.div
@@ -76,6 +97,24 @@ export default function Dashboard({ onAddCard, onEditCard, onAddTransaction, onV
             </div>
             
             <div className="flex items-center gap-3">
+              {/* Command Palette Trigger */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onOpenCommandPalette}
+                className={`hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' 
+                    : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+                }`}
+              >
+                <Command className="w-4 h-4" />
+                <span className="text-sm">Quick Log</span>
+                <kbd className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
+                  isLight ? 'bg-slate-200 text-slate-500' : 'bg-white/10 text-zinc-500'
+                }`}>⌘K</kbd>
+              </motion.button>
+              
               {/* Theme Toggle */}
               <ThemeToggle />
               
@@ -103,6 +142,87 @@ export default function Dashboard({ onAddCard, onEditCard, onAddTransaction, onV
             </div>
           </div>
         </motion.header>
+
+        {/* Quick Actions Bar */}
+        {cards.length > 0 && (
+          <motion.section variants={itemVariants} className="mb-8">
+            <div className="flex flex-wrap gap-2">
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenInsights}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200' 
+                    : 'bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 border border-violet-500/30'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span className="text-sm font-medium">Monthly Insights</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenCardSelector}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200' 
+                    : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-medium">Best Card for...</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenDueDateAlerts}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  urgentPayments.length > 0
+                    ? (isLight 
+                      ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' 
+                      : 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30')
+                    : (isLight 
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                      : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30')
+                }`}
+              >
+                {urgentPayments.length > 0 ? (
+                  <AlertTriangle className="w-4 h-4" />
+                ) : (
+                  <Calendar className="w-4 h-4" />
+                )}
+                <span className="text-sm font-medium">
+                  {urgentPayments.length > 0 
+                    ? `${urgentPayments.length} Payment${urgentPayments.length > 1 ? 's' : ''} Due` 
+                    : 'Due Dates'
+                  }
+                </span>
+                {urgentPayments.length > 0 && (
+                  <span className={`w-2 h-2 rounded-full animate-pulse ${
+                    isLight ? 'bg-red-500' : 'bg-red-400'
+                  }`} />
+                )}
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenAnnualFeeTracker}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200' 
+                    : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                }`}
+              >
+                <Receipt className="w-4 h-4" />
+                <span className="text-sm font-medium">Annual Fees</span>
+              </motion.button>
+            </div>
+          </motion.section>
+        )}
 
         {cards.length === 0 ? (
           <EmptyState onAddCard={onAddCard} />
@@ -205,17 +325,17 @@ export default function Dashboard({ onAddCard, onEditCard, onAddTransaction, onV
           </>
         )}
 
-        {/* Mobile FAB */}
+        {/* Mobile FAB - Opens Command Palette */}
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => onAddTransaction()}
-          className="md:hidden fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 z-50"
+          onClick={onOpenCommandPalette}
+          className="md:hidden fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-violet-500/30 z-50"
         >
-          <Plus className="w-7 h-7 text-white" />
+          <Command className="w-7 h-7 text-white" />
         </motion.button>
       </motion.div>
     </div>
