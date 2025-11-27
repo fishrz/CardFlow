@@ -10,6 +10,8 @@ import SmartCardSelector from './components/SmartCardSelector';
 import InsightsDashboard from './components/InsightsDashboard';
 import DueDateAlerts from './components/DueDateAlerts';
 import AnnualFeeTracker from './components/AnnualFeeTracker';
+import BonusTracker from './components/BonusTracker';
+import SettingsPanel from './components/SettingsPanel';
 import { CreditCard } from './types';
 import { useThemeStore } from './store/useThemeStore';
 
@@ -27,6 +29,8 @@ export default function App() {
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const [isDueDateAlertsOpen, setIsDueDateAlertsOpen] = useState(false);
   const [isAnnualFeeTrackerOpen, setIsAnnualFeeTrackerOpen] = useState(false);
+  const [isBonusTrackerOpen, setIsBonusTrackerOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const { theme, setTheme } = useThemeStore();
   const isLight = theme === 'light';
@@ -131,6 +135,8 @@ export default function App() {
         onOpenDueDateAlerts={() => setIsDueDateAlertsOpen(true)}
         onOpenAnnualFeeTracker={() => setIsAnnualFeeTrackerOpen(true)}
         onOpenCardSelector={() => setIsCardSelectorOpen(true)}
+        onOpenBonusTracker={() => setIsBonusTrackerOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       <AnimatePresence mode="wait">
@@ -202,6 +208,16 @@ export default function App() {
       <AnnualFeeTracker
         isOpen={isAnnualFeeTrackerOpen}
         onClose={() => setIsAnnualFeeTrackerOpen(false)}
+      />
+
+      <BonusTracker
+        isOpen={isBonusTrackerOpen}
+        onClose={() => setIsBonusTrackerOpen(false)}
+      />
+
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

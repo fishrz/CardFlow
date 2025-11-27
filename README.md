@@ -40,6 +40,23 @@ A beautifully crafted credit card tracker designed for the future. Manage multip
 - **Singapore-specific** — Pre-loaded with local bank fee estimates
 - **Fee waiver tips** — How to negotiate with banks
 
+### 🎯 Bonus Tracker (NEW!)
+- **Card bonus rule tracking** — Track spending requirements and bonus caps
+- **DBS Yuu Card support** — Pre-configured with 18% rebate rules and merchant tracking
+- **Minimum spend monitoring** — Know how much more to spend to qualify
+- **Merchant count tracking** — Track unique qualifying merchants (e.g., 4+ yuu merchants)
+- **Real-time progress** — Visual progress bars with status indicators (Below Min, In Zone, Maxed)
+- **Smart recommendations** — Tips on optimizing bonus earnings
+- **Miles conversion** — See estimated KrisFlyer miles from yuu points
+- **More card profiles** — OCBC 365, UOB One pre-configured
+
+### ⚙️ Settings & Data Vault (NEW!)
+- **Export to JSON** — Backup all cards, transactions, and bonus rules
+- **Import from JSON** — Restore from any CardFlow backup file
+- **Privacy stats** — See counts of cards, transactions, and rules
+- **Clear all data** — Start fresh with confirmation safety
+- **Theme preferences** — Switch between dark and light mode
+
 ### 💳 Beautiful Card Management
 - **8 stunning gradient themes** — Purple, Blue, Emerald, Rose, Orange, Cyan, Slate, Amber
 - **Live card preview** — See changes in real-time as you fill the form

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { 
   Plus, CreditCard as CardIcon, TrendingUp, Calendar, Sparkles,
-  Command, BarChart3, AlertTriangle, Receipt, Search
+  Command, BarChart3, AlertTriangle, Receipt, Target, Settings
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -23,6 +23,8 @@ interface DashboardProps {
   onOpenDueDateAlerts: () => void;
   onOpenAnnualFeeTracker: () => void;
   onOpenCardSelector: () => void;
+  onOpenBonusTracker: () => void;
+  onOpenSettings: () => void;
 }
 
 export default function Dashboard({ 
@@ -35,6 +37,8 @@ export default function Dashboard({
   onOpenDueDateAlerts,
   onOpenAnnualFeeTracker,
   onOpenCardSelector,
+  onOpenBonusTracker,
+  onOpenSettings,
 }: DashboardProps) {
   const { cards, getCardStats, getUpcomingPayments } = useStore();
   const { theme } = useThemeStore();
@@ -219,6 +223,34 @@ export default function Dashboard({
               >
                 <Receipt className="w-4 h-4" />
                 <span className="text-sm font-medium">Annual Fees</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenBonusTracker}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200' 
+                    : 'bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30'
+                }`}
+              >
+                <Target className="w-4 h-4" />
+                <span className="text-sm font-medium">Bonus Tracker</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenSettings}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  isLight 
+                    ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200' 
+                    : 'bg-white/5 hover:bg-white/10 text-zinc-400 border border-white/10'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span className="text-sm font-medium">Settings</span>
               </motion.button>
             </div>
           </motion.section>

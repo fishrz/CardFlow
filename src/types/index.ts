@@ -129,3 +129,156 @@ export const CATEGORY_CONFIG: Record<TransactionCategory, { icon: string; label:
   subscription: { icon: '📱', label: 'Subscriptions', color: '#6366F1' },
   other: { icon: '📌', label: 'Other', color: '#64748B' }
 };
+
+// ============================================
+// BONUS TRACKING TYPES
+// ============================================
+
+export type BonusRuleType = 
+  | 'minimum_spend'      // Must spend X to qualify for bonus
+  | 'bonus_cap'          // Bonus stops after X spend
+  | 'merchant_count'     // Must use X different merchants
+  | 'category_bonus';    // Bonus for specific categories
+
+export type MerchantMatchMode = 'exact' | 'contains' | 'regex';
+
+export type RewardUnit = 'cashback' | 'points' | 'miles';
+
+export type BonusStatus = 
+  | 'inactive'           // Not tracking
+  | 'below_minimum'      // Haven't hit minimum spend
+  | 'in_sweet_spot'      // In the optimal range
+  | 'at_cap'             // Hit the cap exactly
+  | 'over_cap';          // Exceeded cap (wasted potential)
+
+// Card Bonus Rule - Defines a single bonus rule for a card
+export interface CardBonusRule {
+  id: string;
+  cardId: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  
+  // Rule Thresholds
+  minSpend?: number;              // Minimum to qualify (e.g., 800)
+  maxBonusSpend?: number;         // Cap on bonus-earning spend (e.g., 822.86)
+  minMerchantCount?: number;      // Required unique merchants (e.g., 4)
+  
+  // Merchant Matching
+  qualifyingMerchants: string[];  // Merchant names that qualify
+  merchantMatchMode: MerchantMatchMode;
+  
+  // Category Matching (alternative to merchants)
+  qualifyingCategories?: TransactionCategory[];
+  
+  // Exclusions
+  excludeKeywords: string[];      // e.g., ["voucher", "gift card"]
+  excludePayments: boolean;       // Exclude card payments
+  
+  // Reward Calculation
+  bonusRate: number;              // e.g., 0.18 for 18%
+  baseRate: number;               // e.g., 0.05 for 5%
+  rewardUnit: RewardUnit;
+  pointsToMilesRatio?: number;    // e.g., 3.6 (360 points = 100 miles)
+  
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Bonus Progress - Calculated state for a card in a period
+export interface BonusProgress {
+  cardId: string;
+  period: string;                 // "2025-11" (YYYY-MM)
+  
+  // Spending Totals
+  totalSpend: number;             // All card spending
+  qualifyingSpend: number;        // Only bonus-eligible spend
+  nonQualifyingSpend: number;     // Spend that doesn't count
+  
+  // Merchant Tracking
+  merchantsUsed: string[];        // Unique qualifying merchants used
+  merchantCount: number;
+  
+  // Rule Status
+  minSpendMet: boolean;
+  bonusCapReached: boolean;
+  merchantRequirementMet: boolean;
+  
+  // Calculations
+  remainingToMinimum: number;     // $ needed to hit minimum
+  remainingToCap: number;         // $ before hitting cap
+  
+  // Estimated Rewards
+  estimatedBonus: number;         // In reward units
+  estimatedMiles?: number;        // Converted to miles if applicable
+  
+  // Overall Status
+  status: BonusStatus;
+  
+  // Recommendations
+  recommendations: string[];
+}
+
+// Card Profile - Pre-configured template for popular cards
+export interface CardProfile {
+  id: string;
+  bankName: string;
+  cardName: string;
+  
+  // Version Control
+  version: string;               // "2025-10"
+  effectiveDate: string;         // When rules took effect
+  lastUpdated: string;
+  
+  // Sources
+  officialTncUrl?: string;
+  reviewUrl?: string;
+  
+  // Pre-configured Rules (without id/cardId - will be generated)
+  bonusRules: Omit<CardBonusRule, 'id' | 'cardId' | 'createdAt' | 'updatedAt'>[];
+  
+  // Card Info
+  annualFee: number;
+  feeWaiverSpend?: number;
+  incomeRequirement?: number;
+  
+  // Tips
+  tips?: string[];
+  
+  // Card appearance
+  suggestedColor: CardColor;
+}
+
+// ============================================
+// DATA EXPORT/IMPORT TYPES
+// ============================================
+
+export interface CardFlowExport {
+  // Metadata
+  version: string;               // Export format version
+  appVersion: string;            // CardFlow app version
+  exportedAt: string;            // ISO timestamp
+  
+  // Core Data
+  cards: CreditCard[];
+  transactions: Transaction[];
+  
+  // Bonus Configuration
+  bonusRules: CardBonusRule[];
+  
+  // Settings
+  settings: {
+    theme: 'dark' | 'light';
+  };
+  
+  // Statistics (for reference, not imported)
+  stats?: {
+    totalCards: number;
+    totalTransactions: number;
+    dateRange?: {
+      from: string;
+      to: string;
+    };
+  };
+}
