@@ -32,6 +32,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
   const editingRule = editingRuleId ? bonusRules.find(r => r.id === editingRuleId) : null;
 
   // Calculate progress for all cards with active rules
+  // IMPORTANT: bonusRules must be in dependencies so this recalculates when profiles are applied
   const cardProgressList = useMemo(() => {
     return cards.map(card => {
       const rule = getActiveRuleForCard(card.id);
@@ -69,7 +70,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
       
       return { card, progress, rule, unrecognizedMerchants };
     });
-  }, [cards, transactions, getActiveRuleForCard, calculateBonusProgress]);
+  }, [cards, transactions, bonusRules, getActiveRuleForCard, calculateBonusProgress]);
 
   const trackedCards = cardProgressList.filter(item => item.progress !== null);
   const untrackedCards = cardProgressList.filter(item => item.progress === null);
@@ -120,9 +121,11 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
   };
 
   const handleApplyProfile = (profileId: string, cardId: string) => {
+    const profile = CARD_PROFILES.find(p => p.id === profileId);
     applyCardProfile(profileId, cardId);
     setShowProfileSelector(false);
     setSelectedCardId(null);
+    toast.success(`Applied ${profile?.bankName} ${profile?.cardName} profile`);
   };
 
   const handleAddMerchant = () => {
