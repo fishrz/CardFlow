@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  X, Sparkles, CreditCard as CardIcon, ChevronRight, 
+  X, Sparkles, CreditCard as CardIcon, 
   TrendingUp, Percent, DollarSign, ShoppingBag, Utensils,
   Car, Plane, Film, Zap, HeartPulse, GraduationCap, Wifi
 } from 'lucide-react';
@@ -14,26 +14,134 @@ interface SmartCardSelectorProps {
   onClose: () => void;
 }
 
-interface CardReward {
-  cardId: string;
+interface CardRewardConfig {
   category: TransactionCategory;
-  rewardRate: number; // percentage
+  rewardRate: number; // percentage (e.g., 6 = 6%)
   rewardType: 'cashback' | 'miles' | 'points';
+  milesPerDollar?: number; // For miles cards
 }
 
-// Singapore-specific reward categories (user could customize this)
-const DEFAULT_REWARDS: Omit<CardReward, 'cardId'>[] = [
-  { category: 'food', rewardRate: 5, rewardType: 'cashback' },
-  { category: 'transport', rewardRate: 3, rewardType: 'cashback' },
-  { category: 'shopping', rewardRate: 4, rewardType: 'cashback' },
-  { category: 'entertainment', rewardRate: 2, rewardType: 'cashback' },
-  { category: 'utilities', rewardRate: 1, rewardType: 'cashback' },
-  { category: 'healthcare', rewardRate: 1, rewardType: 'cashback' },
-  { category: 'travel', rewardRate: 3, rewardType: 'miles' },
-  { category: 'education', rewardRate: 1, rewardType: 'cashback' },
-  { category: 'subscription', rewardRate: 2, rewardType: 'cashback' },
-  { category: 'other', rewardRate: 1, rewardType: 'cashback' },
-];
+// Singapore Credit Card Reward Rates (2024-2025)
+// Based on real card benefits
+const SINGAPORE_CARD_REWARDS: Record<string, CardRewardConfig[]> = {
+  // DBS Yuu Card - 18% at yuu merchants (but we simplify for categories)
+  'DBS': [
+    { category: 'food', rewardRate: 10, rewardType: 'miles', milesPerDollar: 10 }, // yuu merchants
+    { category: 'shopping', rewardRate: 10, rewardType: 'miles', milesPerDollar: 10 }, // yuu merchants  
+    { category: 'transport', rewardRate: 5, rewardType: 'cashback' }, // SimplyGo
+    { category: 'entertainment', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 4, rewardType: 'miles', milesPerDollar: 4 },
+    { category: 'education', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 5, rewardType: 'cashback' },
+  ],
+  // OCBC 365 Card - 6% dining, 3% grocery, 3% transport
+  'OCBC': [
+    { category: 'food', rewardRate: 6, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'transport', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 0.3, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 0.3, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 3, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 0.3, rewardType: 'cashback' },
+  ],
+  // UOB One Card - Up to 10% rebate
+  'UOB': [
+    { category: 'food', rewardRate: 10, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'transport', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 3.33, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 3.33, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 3.33, rewardType: 'cashback' },
+  ],
+  // Citi Cash Back - 8% groceries/petrol, 6% dining
+  'Citibank': [
+    { category: 'food', rewardRate: 6, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 8, rewardType: 'cashback' }, // groceries
+    { category: 'transport', rewardRate: 8, rewardType: 'cashback' }, // petrol
+    { category: 'entertainment', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 0.25, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 0.25, rewardType: 'cashback' },
+  ],
+  // HSBC Advance - 3.5% on selected categories
+  'HSBC': [
+    { category: 'food', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'transport', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 2.5, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 2.5, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 2.5, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 3.5, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 2.5, rewardType: 'cashback' },
+  ],
+  // Standard Chartered - Various rates
+  'Standard Chartered': [
+    { category: 'food', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'transport', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 2, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 3, rewardType: 'miles', milesPerDollar: 3 },
+    { category: 'education', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 2, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 1, rewardType: 'cashback' },
+  ],
+  // Maybank - Family & Friends
+  'Maybank': [
+    { category: 'food', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 8, rewardType: 'cashback' }, // weekends
+    { category: 'transport', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 0.3, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 0.3, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 0.3, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 5, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 0.3, rewardType: 'cashback' },
+  ],
+  // AMEX KrisFlyer - Miles focused
+  'AMEX': [
+    { category: 'food', rewardRate: 2.2, rewardType: 'miles', milesPerDollar: 2.2 },
+    { category: 'shopping', rewardRate: 2.2, rewardType: 'miles', milesPerDollar: 2.2 },
+    { category: 'transport', rewardRate: 2.2, rewardType: 'miles', milesPerDollar: 2.2 },
+    { category: 'entertainment', rewardRate: 2.2, rewardType: 'miles', milesPerDollar: 2.2 },
+    { category: 'utilities', rewardRate: 1.1, rewardType: 'miles', milesPerDollar: 1.1 },
+    { category: 'healthcare', rewardRate: 1.1, rewardType: 'miles', milesPerDollar: 1.1 },
+    { category: 'travel', rewardRate: 3, rewardType: 'miles', milesPerDollar: 3 },
+    { category: 'education', rewardRate: 1.1, rewardType: 'miles', milesPerDollar: 1.1 },
+    { category: 'subscription', rewardRate: 1.1, rewardType: 'miles', milesPerDollar: 1.1 },
+    { category: 'other', rewardRate: 1.1, rewardType: 'miles', milesPerDollar: 1.1 },
+  ],
+  // Default fallback for other banks
+  'DEFAULT': [
+    { category: 'food', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'shopping', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'transport', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'entertainment', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'utilities', rewardRate: 0.5, rewardType: 'cashback' },
+    { category: 'healthcare', rewardRate: 0.5, rewardType: 'cashback' },
+    { category: 'travel', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'education', rewardRate: 0.5, rewardType: 'cashback' },
+    { category: 'subscription', rewardRate: 1, rewardType: 'cashback' },
+    { category: 'other', rewardRate: 0.5, rewardType: 'cashback' },
+  ],
+};
 
 const CATEGORY_ICONS: Record<TransactionCategory, JSX.Element> = {
   food: <Utensils className="w-5 h-5" />,
@@ -61,6 +169,14 @@ const CATEGORY_LABELS: Record<TransactionCategory, string> = {
   other: 'General',
 };
 
+// Helper function to get reward config for a card based on bank name
+function getCardRewardConfig(bankName: string): CardRewardConfig[] {
+  const bankKey = Object.keys(SINGAPORE_CARD_REWARDS).find(key => 
+    bankName.toUpperCase().includes(key.toUpperCase())
+  );
+  return SINGAPORE_CARD_REWARDS[bankKey || 'DEFAULT'];
+}
+
 export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelectorProps) {
   const [selectedCategory, setSelectedCategory] = useState<TransactionCategory | null>(null);
   const [amount, setAmount] = useState<number>(100);
@@ -69,18 +185,13 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
-  // Generate random but consistent rewards for each card (in real app, this would be user-configured)
+  // Get reward config for each card based on bank name
   const cardRewards = useMemo(() => {
-    const rewards: Map<string, CardReward[]> = new Map();
+    const rewards: Map<string, CardRewardConfig[]> = new Map();
     
-    cards.forEach((card, index) => {
-      const cardRewardList: CardReward[] = DEFAULT_REWARDS.map((reward, rewardIndex) => ({
-        ...reward,
-        cardId: card.id,
-        // Vary reward rates based on card index to simulate different cards having different strengths
-        rewardRate: Math.max(1, reward.rewardRate + ((index + rewardIndex) % 3) - 1),
-      }));
-      rewards.set(card.id, cardRewardList);
+    cards.forEach((card) => {
+      const config = getCardRewardConfig(card.bankName);
+      rewards.set(card.id, config);
     });
     
     return rewards;
@@ -93,6 +204,7 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
     let bestCard: CreditCard | null = null;
     let bestRate = 0;
     let bestRewardType: 'cashback' | 'miles' | 'points' = 'cashback';
+    let bestMilesPerDollar: number | undefined;
     
     cards.forEach(card => {
       const rewards = cardRewards.get(card.id);
@@ -102,18 +214,23 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
         bestCard = card;
         bestRate = categoryReward.rewardRate;
         bestRewardType = categoryReward.rewardType;
+        bestMilesPerDollar = categoryReward.milesPerDollar;
       }
     });
     
     if (!bestCard) return null;
     
-    const savings = (amount * bestRate) / 100;
+    // Calculate savings/rewards
+    const savings = bestRewardType === 'miles' && bestMilesPerDollar
+      ? amount * bestMilesPerDollar // total miles earned
+      : (amount * bestRate) / 100;  // cashback amount
     
     return {
       card: bestCard,
       rate: bestRate,
       rewardType: bestRewardType,
       savings,
+      milesPerDollar: bestMilesPerDollar,
     };
   }, [selectedCategory, cards, cardRewards, amount]);
 
@@ -125,11 +242,21 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
       .map(card => {
         const rewards = cardRewards.get(card.id);
         const categoryReward = rewards?.find(r => r.category === selectedCategory);
+        const rewardRate = categoryReward?.rewardRate || 0;
+        const rewardType = categoryReward?.rewardType || 'cashback';
+        const milesPerDollar = categoryReward?.milesPerDollar;
+        
+        // Calculate value based on reward type
+        const savings = rewardType === 'miles' && milesPerDollar
+          ? amount * milesPerDollar // total miles
+          : (amount * rewardRate) / 100; // cashback
+        
         return {
           card,
-          rate: categoryReward?.rewardRate || 0,
-          rewardType: categoryReward?.rewardType || 'cashback',
-          savings: (amount * (categoryReward?.rewardRate || 0)) / 100,
+          rate: rewardRate,
+          rewardType,
+          savings,
+          milesPerDollar,
         };
       })
       .sort((a, b) => b.rate - a.rate);
@@ -278,9 +405,16 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                       <h3 className="font-semibold text-lg">{recommendation.card.cardName || recommendation.card.bankName}</h3>
                       <div className="flex items-center gap-4 mt-1">
                         <div className="flex items-center gap-1">
-                          <Percent className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                          {recommendation.rewardType === 'miles' ? (
+                            <Plane className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                          ) : (
+                            <Percent className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                          )}
                           <span className={`text-sm font-medium ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>
-                            {recommendation.rate}% {recommendation.rewardType}
+                            {recommendation.rewardType === 'miles' && recommendation.milesPerDollar
+                              ? `${recommendation.milesPerDollar} mpd`
+                              : `${recommendation.rate}% cashback`
+                            }
                           </span>
                         </div>
                         <div className={`text-sm ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
@@ -291,10 +425,13 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                     
                     <div className="text-right">
                       <p className={`text-2xl font-bold ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>
-                        ${recommendation.savings.toFixed(2)}
+                        {recommendation.rewardType === 'miles'
+                          ? `${Math.round(recommendation.savings).toLocaleString()}`
+                          : `$${recommendation.savings.toFixed(2)}`
+                        }
                       </p>
                       <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                        savings
+                        {recommendation.rewardType === 'miles' ? 'miles' : 'savings'}
                       </p>
                     </div>
                   </div>
@@ -323,14 +460,20 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                       <div className="flex-1">
                         <p className="font-medium text-sm">{item.card.bankName}</p>
                         <p className={`text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                          •••• {item.card.lastFourDigits}
+                          {item.card.cardName || `•••• ${item.card.lastFourDigits}`}
                         </p>
                       </div>
                       <div className={`text-sm font-medium ${isLight ? 'text-slate-600' : 'text-zinc-300'}`}>
-                        {item.rate}%
+                        {item.rewardType === 'miles' && item.milesPerDollar
+                          ? `${item.milesPerDollar} mpd`
+                          : `${item.rate}%`
+                        }
                       </div>
                       <div className={`text-sm ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                        ${item.savings.toFixed(2)}
+                        {item.rewardType === 'miles'
+                          ? `${Math.round(item.savings).toLocaleString()} mi`
+                          : `$${item.savings.toFixed(2)}`
+                        }
                       </div>
                     </motion.div>
                   ))}

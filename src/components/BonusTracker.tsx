@@ -20,13 +20,16 @@ interface BonusTrackerProps {
 export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [showProfileSelector, setShowProfileSelector] = useState(false);
-  const [editingRule, setEditingRule] = useState<CardBonusRule | null>(null);
+  const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [newMerchant, setNewMerchant] = useState('');
   
   const { cards, transactions } = useStore();
   const { bonusRules, calculateBonusProgress, applyCardProfile, getActiveRuleForCard, addMerchantToRule, removeMerchantFromRule } = useBonusStore();
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+  
+  // Get the current rule from store (live data, not stale)
+  const editingRule = editingRuleId ? bonusRules.find(r => r.id === editingRuleId) : null;
 
   // Calculate progress for all cards with active rules
   const cardProgressList = useMemo(() => {
@@ -123,15 +126,17 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
   };
 
   const handleAddMerchant = () => {
-    if (editingRule && newMerchant.trim()) {
-      addMerchantToRule(editingRule.id, newMerchant.trim());
+    if (editingRuleId && newMerchant.trim()) {
+      addMerchantToRule(editingRuleId, newMerchant.trim());
       setNewMerchant('');
+      toast.success(`Added "${newMerchant.trim()}" to merchants`);
     }
   };
 
   const handleRemoveMerchant = (merchant: string) => {
-    if (editingRule) {
-      removeMerchantFromRule(editingRule.id, merchant);
+    if (editingRuleId) {
+      removeMerchantFromRule(editingRuleId, merchant);
+      toast.success(`Removed "${merchant}"`);
     }
   };
 
@@ -393,7 +398,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={() => setEditingRule(rule)}
+                          onClick={() => setEditingRuleId(rule.id)}
                           className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium ${
                             isLight 
                               ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' 
@@ -534,37 +539,47 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
 
         {/* Merchant Management Modal */}
         <AnimatePresence>
-          {editingRule && (
+          {editingRule && editingRuleId && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-              onClick={() => setEditingRule(null)}
+              className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              onClick={() => setEditingRuleId(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 onClick={(e) => e.stopPropagation()}
                 className={`w-full max-w-md rounded-2xl p-6 ${
                   isLight ? 'bg-white shadow-2xl' : 'bg-zinc-900 border border-white/10'
                 }`}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Qualifying Merchants</h3>
-                  <button
-                    onClick={() => setEditingRule(null)}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      isLight ? 'bg-violet-100' : 'bg-violet-500/20'
+                    }`}>
+                      <Store className={`w-5 h-5 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
+                    </div>
+                    <h3 className="text-lg font-semibold">Qualifying Merchants</h3>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setEditingRuleId(null)}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       isLight ? 'hover:bg-slate-100' : 'hover:bg-white/10'
                     }`}
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </motion.button>
                 </div>
                 
                 <p className={`text-sm mb-4 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                  Add merchants that qualify for bonus rewards. Transactions matching these names will count toward your bonus.
+                  Add merchants that qualify for bonus. Matching transactions will count toward your rewards.
                 </p>
                 
                 {/* Add New Merchant */}
@@ -573,9 +588,14 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                     type="text"
                     value={newMerchant}
                     onChange={(e) => setNewMerchant(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddMerchant()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddMerchant();
+                      }
+                    }}
                     placeholder="e.g., Cold Storage, Giant..."
-                    className={`flex-1 px-4 py-2 rounded-xl text-sm ${
+                    className={`flex-1 px-4 py-3 rounded-xl text-sm ${
                       isLight 
                         ? 'bg-slate-100 border border-slate-200 focus:border-violet-400' 
                         : 'bg-white/5 border border-white/10 focus:border-violet-500'
@@ -586,72 +606,80 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAddMerchant}
                     disabled={!newMerchant.trim()}
-                    className={`px-4 py-2 rounded-xl font-medium ${
+                    className={`px-4 py-3 rounded-xl font-medium ${
                       newMerchant.trim()
-                        ? 'bg-violet-500 text-white hover:bg-violet-600'
+                        ? 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-lg shadow-violet-500/25'
                         : isLight ? 'bg-slate-200 text-slate-400' : 'bg-white/10 text-zinc-500'
-                    } transition-colors`}
+                    } transition-all`}
                   >
                     <Plus className="w-5 h-5" />
                   </motion.button>
                 </div>
                 
                 {/* Merchant List */}
-                <div className={`rounded-xl overflow-hidden ${
-                  isLight ? 'bg-slate-50' : 'bg-white/5'
+                <div className={`rounded-xl overflow-hidden border ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'
                 }`}>
-                  <div className={`px-4 py-2 text-xs font-semibold ${
-                    isLight ? 'text-slate-500 bg-slate-100' : 'text-zinc-400 bg-white/5'
+                  <div className={`px-4 py-2.5 text-xs font-semibold flex items-center justify-between ${
+                    isLight ? 'text-slate-600 bg-slate-100' : 'text-zinc-300 bg-white/5'
                   }`}>
-                    {editingRule.qualifyingMerchants.length} merchants configured
+                    <span>{editingRule.qualifyingMerchants.length} merchants configured</span>
+                    <span className={`${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>Click to remove</span>
                   </div>
-                  <div className="max-h-48 overflow-y-auto">
+                  <div className="max-h-52 overflow-y-auto">
                     {editingRule.qualifyingMerchants.length === 0 ? (
-                      <p className={`p-4 text-sm text-center ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                        No merchants added yet
-                      </p>
+                      <div className={`p-6 text-center ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
+                        <Store className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No merchants added yet</p>
+                        <p className="text-xs mt-1">Add merchants above to start tracking</p>
+                      </div>
                     ) : (
-                      editingRule.qualifyingMerchants.map((merchant) => (
-                        <div
+                      editingRule.qualifyingMerchants.map((merchant, index) => (
+                        <motion.div
                           key={merchant}
-                          className={`flex items-center justify-between px-4 py-2 ${
-                            isLight ? 'hover:bg-slate-100' : 'hover:bg-white/5'
-                          }`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.02 }}
+                          className={`flex items-center justify-between px-4 py-2.5 border-b last:border-b-0 ${
+                            isLight ? 'border-slate-100 hover:bg-slate-100' : 'border-white/5 hover:bg-white/5'
+                          } transition-colors`}
                         >
-                          <div className="flex items-center gap-2">
-                            <Store className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`} />
-                            <span className="text-sm">{merchant}</span>
+                          <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${isLight ? 'bg-emerald-500' : 'bg-emerald-400'}`} />
+                            <span className="text-sm font-medium">{merchant}</span>
                           </div>
                           <motion.button
-                            whileHover={{ scale: 1.1 }}
+                            whileHover={{ scale: 1.1, backgroundColor: isLight ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.2)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleRemoveMerchant(merchant)}
-                            className={`p-1 rounded-lg ${
-                              isLight ? 'hover:bg-red-100 text-red-500' : 'hover:bg-red-500/20 text-red-400'
+                            className={`p-2 rounded-lg transition-colors ${
+                              isLight ? 'text-slate-400 hover:text-red-500' : 'text-zinc-500 hover:text-red-400'
                             }`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </motion.button>
-                        </div>
+                        </motion.div>
                       ))
                     )}
                   </div>
                 </div>
                 
                 <p className={`mt-4 text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                  💡 Tip: Use partial names for flexible matching (e.g., "Giant" will match "GIANT SUPERMARKET")
+                  💡 Tip: Use partial names for flexible matching (e.g., "Giant" matches "GIANT SUPERMARKET")
                 </p>
                 
-                <button
-                  onClick={() => setEditingRule(null)}
-                  className={`w-full mt-4 px-4 py-3 rounded-xl font-medium ${
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setEditingRuleId(null)}
+                  className={`w-full mt-4 px-4 py-3 rounded-xl font-semibold ${
                     isLight 
-                      ? 'bg-violet-100 text-violet-700 hover:bg-violet-200' 
-                      : 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                  }`}
+                      ? 'bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-700 hover:from-violet-200 hover:to-indigo-200' 
+                      : 'bg-gradient-to-r from-violet-500/20 to-indigo-500/20 text-violet-300 hover:from-violet-500/30 hover:to-indigo-500/30'
+                  } transition-all`}
                 >
                   Done
-                </button>
+                </motion.button>
               </motion.div>
             </motion.div>
           )}

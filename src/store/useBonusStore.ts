@@ -299,22 +299,22 @@ export const useBonusStore = create<BonusState>()(
         const profile = CARD_PROFILES.find(p => p.id === profileId);
         if (!profile) return;
         
-        // Remove existing rules for this card
-        set((state) => ({
-          bonusRules: state.bonusRules.filter((rule) => rule.cardId !== cardId),
+        // Create new rules from profile template
+        const newRules: CardBonusRule[] = profile.bonusRules.map((ruleTemplate) => ({
+          ...ruleTemplate,
+          id: uuidv4(),
+          cardId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         }));
         
-        // Add rules from profile
-        profile.bonusRules.forEach((ruleTemplate) => {
-          const newRule: CardBonusRule = {
-            ...ruleTemplate,
-            id: uuidv4(),
-            cardId,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          set((state) => ({ bonusRules: [...state.bonusRules, newRule] }));
-        });
+        // Remove existing rules for this card and add new ones in single update
+        set((state) => ({
+          bonusRules: [
+            ...state.bonusRules.filter((rule) => rule.cardId !== cardId),
+            ...newRules,
+          ],
+        }));
       },
       
       getRulesForCard: (cardId) => {

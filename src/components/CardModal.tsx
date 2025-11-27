@@ -139,7 +139,7 @@ export default function CardModal({ card, onClose }: CardModalProps) {
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-lg rounded-3xl overflow-hidden ${
+        className={`w-full max-w-lg max-h-[90vh] rounded-3xl overflow-hidden flex flex-col ${
           isLight 
             ? 'bg-white shadow-2xl shadow-black/10' 
             : 'glass-strong'
@@ -171,112 +171,92 @@ export default function CardModal({ card, onClose }: CardModalProps) {
           </motion.button>
         </div>
 
-        {/* Template Selector (for new cards only) */}
-        <AnimatePresence>
-          {!card && showTemplateSelector && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="px-6 pt-6"
-            >
-              <div className={`p-4 rounded-2xl ${
-                isLight ? 'bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200' : 'bg-gradient-to-br from-violet-500/10 to-indigo-500/10 border border-violet-500/30'
-              }`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className={`w-4 h-4 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
-                  <span className={`text-sm font-semibold ${isLight ? 'text-violet-700' : 'text-violet-300'}`}>
-                    Start from a template
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Quick Template Select (for new cards only) - Compact horizontal scroll */}
+          {!card && !selectedProfileId && (
+            <div className={`px-6 pt-4 pb-2 border-b ${isLight ? 'border-slate-100' : 'border-white/5'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className={`w-4 h-4 ${isLight ? 'text-violet-500' : 'text-violet-400'}`} />
+                  <span className={`text-xs font-semibold ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+                    Quick Start
                   </span>
                 </div>
-                <p className={`text-xs mb-3 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                  Pre-configured with bonus tracking rules for popular Singapore cards
-                </p>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {CARD_PROFILES.map((profile) => (
-                    <motion.button
-                      key={profile.id}
-                      type="button"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => handleSelectTemplate(profile.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-colors ${
-                        isLight ? 'bg-white hover:bg-violet-50' : 'bg-black/20 hover:bg-violet-500/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-5 rounded bg-gradient-to-br ${CARD_COLORS[profile.suggestedColor].gradient}`} />
-                        <div>
-                          <p className="font-medium text-sm">{profile.bankName} {profile.cardName}</p>
-                          <p className={`text-[10px] ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                            {profile.bonusRules[0]?.description?.slice(0, 40)}...
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-300' : 'text-zinc-600'}`} />
-                    </motion.button>
-                  ))}
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                {CARD_PROFILES.map((profile) => (
+                  <motion.button
+                    key={profile.id}
+                    type="button"
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSelectTemplate(profile.id)}
+                    className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
+                      isLight 
+                        ? 'bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 hover:border-violet-400' 
+                        : 'bg-gradient-to-r from-violet-500/10 to-indigo-500/10 border border-violet-500/30 hover:border-violet-500/50'
+                    }`}
+                  >
+                    <div className={`w-6 h-4 rounded bg-gradient-to-br ${CARD_COLORS[profile.suggestedColor].gradient}`} />
+                    <span className={`text-xs font-medium whitespace-nowrap ${isLight ? 'text-violet-700' : 'text-violet-300'}`}>
+                      {profile.bankName} {profile.cardName}
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Selected Template Badge */}
+          {selectedProfileId && (
+            <div className={`px-6 py-3 border-b ${isLight ? 'border-slate-100 bg-emerald-50/50' : 'border-white/5 bg-emerald-500/5'}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Check className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                  <span className={`text-xs font-medium ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>
+                    {CARD_PROFILES.find(p => p.id === selectedProfileId)?.bankName} {CARD_PROFILES.find(p => p.id === selectedProfileId)?.cardName}
+                  </span>
                 </div>
                 <button
                   type="button"
-                  onClick={handleSkipTemplate}
-                  className={`w-full mt-3 py-2 text-xs font-medium rounded-lg ${
-                    isLight ? 'text-slate-500 hover:bg-slate-100' : 'text-zinc-500 hover:bg-white/5'
+                  onClick={() => {
+                    setSelectedProfileId(null);
+                    setFormData({ ...formData, bankName: '', cardName: '', color: 'purple' });
+                  }}
+                  className={`text-xs px-2 py-1 rounded-lg ${
+                    isLight ? 'text-slate-500 hover:bg-slate-100' : 'text-zinc-400 hover:bg-white/10'
                   }`}
                 >
-                  Skip - Create custom card
+                  Clear
                 </button>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
 
-        {/* Selected Template Badge */}
-        {selectedProfileId && !showTemplateSelector && (
+          {/* Card Preview - Compact */}
           <div className="px-6 pt-4">
-            <div className={`flex items-center justify-between px-3 py-2 rounded-xl ${
-              isLight ? 'bg-emerald-50 border border-emerald-200' : 'bg-emerald-500/10 border border-emerald-500/30'
-            }`}>
-              <div className="flex items-center gap-2">
-                <Check className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
-                <span className={`text-xs font-medium ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>
-                  Template: {CARD_PROFILES.find(p => p.id === selectedProfileId)?.bankName} {CARD_PROFILES.find(p => p.id === selectedProfileId)?.cardName}
-                </span>
+            <div className={`aspect-[2.2/1] rounded-2xl bg-gradient-to-br ${CARD_COLORS[formData.color].gradient} p-4 relative overflow-hidden`}>
+              <div className="absolute inset-0 opacity-30">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2" />
               </div>
-              <button
-                type="button"
-                onClick={() => setShowTemplateSelector(true)}
-                className={`text-xs ${isLight ? 'text-emerald-600 hover:text-emerald-700' : 'text-emerald-400 hover:text-emerald-300'}`}
-              >
-                Change
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Card Preview */}
-        <div className="px-6 pt-6">
-          <div className={`aspect-[1.8/1] rounded-2xl bg-gradient-to-br ${CARD_COLORS[formData.color].gradient} p-5 relative overflow-hidden`}>
-            <div className="absolute inset-0 opacity-30">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
-            </div>
-            <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <p className="text-white/70 text-sm">{formData.bankName || 'Bank Name'}</p>
-                <p className="text-white font-semibold">{formData.cardName || 'Card Name'}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-white/60">••••</span>
-                <span className="text-white/60">••••</span>
-                <span className="text-white/60">••••</span>
-                <span className="text-white font-mono">{formData.lastFourDigits || '0000'}</span>
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <p className="text-white/70 text-xs">{formData.bankName || 'Bank Name'}</p>
+                  <p className="text-white font-semibold text-sm">{formData.cardName || 'Card Name'}</p>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="text-white/60">••••</span>
+                  <span className="text-white/60">••••</span>
+                  <span className="text-white/60">••••</span>
+                  <span className="text-white font-mono">{formData.lastFourDigits || '0000'}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Bank Selection */}
           <div>
             <label className={labelClasses}>
@@ -382,72 +362,73 @@ export default function CardModal({ card, onClose }: CardModalProps) {
             </div>
           </div>
 
-          {/* Color Selection */}
-          <div>
-            <label className={labelClasses}>
-              <Palette className="w-4 h-4" />
-              Card Color
-            </label>
-            <div className="flex gap-2">
-              {colorOptions.map((color) => (
+            {/* Color Selection - Compact */}
+            <div>
+              <label className={labelClasses}>
+                <Palette className="w-4 h-4" />
+                Color
+              </label>
+              <div className="flex gap-1.5">
+                {colorOptions.map((color) => (
+                  <motion.button
+                    key={color}
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setFormData({ ...formData, color })}
+                    className={`w-8 h-8 rounded-lg bg-gradient-to-br ${CARD_COLORS[color].gradient} flex items-center justify-center transition-all ${
+                      formData.color === color 
+                        ? `ring-2 ring-violet-500 ${isLight ? 'ring-offset-1 ring-offset-white' : 'ring-offset-1 ring-offset-zinc-900'}` 
+                        : ''
+                    }`}
+                  >
+                    {formData.color === color && <Check className="w-4 h-4 text-white" />}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              {card && (
                 <motion.button
-                  key={color}
                   type="button"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setFormData({ ...formData, color })}
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${CARD_COLORS[color].gradient} flex items-center justify-center transition-all ${
-                    formData.color === color 
-                      ? `ring-2 ring-white ${isLight ? 'ring-offset-2 ring-offset-white' : 'ring-offset-2 ring-offset-zinc-900'}` 
-                      : ''
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className={`px-4 py-2.5 rounded-xl font-medium transition-colors text-sm ${
+                    isLight 
+                      ? 'bg-red-100 text-red-600 hover:bg-red-200' 
+                      : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
                   }`}
                 >
-                  {formData.color === color && <Check className="w-5 h-5 text-white" />}
+                  Delete
                 </motion.button>
-              ))}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            {card && (
+              )}
               <motion.button
                 type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setShowDeleteConfirm(true)}
-                className={`px-6 py-3 rounded-xl font-medium transition-colors ${
+                onClick={onClose}
+                className={`flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm ${
                   isLight 
-                    ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                    : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' 
+                    : 'bg-white/5 hover:bg-white/10'
                 }`}
               >
-                Delete
+                Cancel
               </motion.button>
-            )}
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onClose}
-              className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors ${
-                isLight 
-                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' 
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-            >
-              Cancel
-            </motion.button>
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 font-medium transition-colors text-white"
-            >
-              {card ? 'Save Changes' : 'Add Card'}
-            </motion.button>
-          </div>
-        </form>
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 font-medium transition-colors text-white text-sm shadow-lg shadow-violet-500/25"
+              >
+                {card ? 'Save Changes' : 'Add Card'}
+              </motion.button>
+            </div>
+          </form>
+        </div>
 
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
