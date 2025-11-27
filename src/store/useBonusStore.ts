@@ -25,7 +25,7 @@ export const CARD_PROFILES: CardProfile[] = [
     bonusRules: [
       {
         name: 'DBS Yuu Bonus Tracker',
-        description: '18% rebate at yuu merchants with S$800 min spend and 4+ merchants',
+        description: '10 mpd at yuu merchants with S$800 min spend and 4+ merchants',
         isActive: true,
         minSpend: 800,
         maxBonusSpend: 822.86,
@@ -49,8 +49,9 @@ export const CARD_PROFILES: CardProfile[] = [
         excludePayments: true,
         bonusRate: 0.18,
         baseRate: 0.05,
-        rewardUnit: 'points',
-        pointsToMilesRatio: 3.6, // 360 yuu points = 100 KrisFlyer miles
+        rewardUnit: 'miles',
+        milesPerDollar: 10, // $1 = 10 KrisFlyer miles when qualified
+        pointsToMilesRatio: 3.6, // For reference: 360 yuu points = 100 KrisFlyer miles
       },
     ],
     tips: [
@@ -144,6 +145,10 @@ interface BonusState {
   updateBonusRule: (id: string, updates: Partial<CardBonusRule>) => void;
   deleteBonusRule: (id: string) => void;
   toggleBonusRule: (id: string) => void;
+  
+  // Actions - Merchant Management
+  addMerchantToRule: (ruleId: string, merchant: string) => void;
+  removeMerchantFromRule: (ruleId: string, merchant: string) => void;
   
   // Actions - Profile Templates
   applyCardProfile: (profileId: string, cardId: string) => void;
@@ -257,6 +262,34 @@ export const useBonusStore = create<BonusState>()(
           bonusRules: state.bonusRules.map((rule) =>
             rule.id === id 
               ? { ...rule, isActive: !rule.isActive, updatedAt: new Date().toISOString() } 
+              : rule
+          ),
+        }));
+      },
+      
+      addMerchantToRule: (ruleId, merchant) => {
+        set((state) => ({
+          bonusRules: state.bonusRules.map((rule) =>
+            rule.id === ruleId && !rule.qualifyingMerchants.includes(merchant)
+              ? { 
+                  ...rule, 
+                  qualifyingMerchants: [...rule.qualifyingMerchants, merchant],
+                  updatedAt: new Date().toISOString() 
+                } 
+              : rule
+          ),
+        }));
+      },
+      
+      removeMerchantFromRule: (ruleId, merchant) => {
+        set((state) => ({
+          bonusRules: state.bonusRules.map((rule) =>
+            rule.id === ruleId
+              ? { 
+                  ...rule, 
+                  qualifyingMerchants: rule.qualifyingMerchants.filter(m => m !== merchant),
+                  updatedAt: new Date().toISOString() 
+                } 
               : rule
           ),
         }));
@@ -376,9 +409,17 @@ export const useBonusStore = create<BonusState>()(
           ? effectiveQualifyingSpend * rule.bonusRate
           : 0;
         
-        const estimatedMiles = rule.pointsToMilesRatio
-          ? estimatedBonus / rule.pointsToMilesRatio
-          : undefined;
+        // Calculate estimated miles - prefer direct milesPerDollar if available
+        let estimatedMiles: number | undefined;
+        if (minSpendMet && merchantRequirementMet) {
+          if (rule.milesPerDollar) {
+            // Direct calculation: $1 = X miles
+            estimatedMiles = effectiveQualifyingSpend * rule.milesPerDollar;
+          } else if (rule.pointsToMilesRatio) {
+            // Indirect calculation through points
+            estimatedMiles = estimatedBonus / rule.pointsToMilesRatio;
+          }
+        }
         
         // Generate recommendations
         const recommendations: string[] = [];

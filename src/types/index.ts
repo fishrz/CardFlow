@@ -179,7 +179,8 @@ export interface CardBonusRule {
   bonusRate: number;              // e.g., 0.18 for 18%
   baseRate: number;               // e.g., 0.05 for 5%
   rewardUnit: RewardUnit;
-  pointsToMilesRatio?: number;    // e.g., 3.6 (360 points = 100 miles)
+  pointsToMilesRatio?: number;    // e.g., 3.6 (360 points = 100 miles) - for intermediate calculation
+  milesPerDollar?: number;        // e.g., 10 (direct mpd when qualified) - preferred for display
   
   // Metadata
   createdAt: string;

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { X, CreditCard, Building2, Calendar, DollarSign, Palette, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, CreditCard, Building2, Calendar, DollarSign, Palette, Check, Sparkles, ChevronRight } from 'lucide-react';
 import { CreditCard as CreditCardType, CardColor, CARD_COLORS, SINGAPORE_BANKS } from '../types';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
+import { useBonusStore, CARD_PROFILES } from '../store/useBonusStore';
 import toast from 'react-hot-toast';
 
 interface CardModalProps {
@@ -12,9 +13,14 @@ interface CardModalProps {
 }
 
 export default function CardModal({ card, onClose }: CardModalProps) {
-  const { addCard, updateCard, deleteCard } = useStore();
+  const { addCard, updateCard, deleteCard, cards } = useStore();
+  const { applyCardProfile } = useBonusStore();
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+  
+  // Track selected profile for new cards
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(!card); // Show by default for new cards
   
   const [formData, setFormData] = useState({
     bankName: card?.bankName || '',
@@ -28,6 +34,26 @@ export default function CardModal({ card, onClose }: CardModalProps) {
   });
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Apply template when selected
+  const handleSelectTemplate = (profileId: string) => {
+    const profile = CARD_PROFILES.find(p => p.id === profileId);
+    if (profile) {
+      setFormData({
+        ...formData,
+        bankName: profile.bankName,
+        cardName: profile.cardName,
+        color: profile.suggestedColor,
+      });
+      setSelectedProfileId(profileId);
+      setShowTemplateSelector(false);
+    }
+  };
+  
+  const handleSkipTemplate = () => {
+    setSelectedProfileId(null);
+    setShowTemplateSelector(false);
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -54,8 +80,27 @@ export default function CardModal({ card, onClose }: CardModalProps) {
       updateCard(card.id, formData);
       toast.success('Card updated successfully');
     } else {
+      // Add card first
       addCard(formData);
-      toast.success('Card added successfully');
+      
+      // If a template was selected, apply bonus rules after card is created
+      if (selectedProfileId) {
+        // Find the newly created card (it will be the last one with matching details)
+        setTimeout(() => {
+          const newCards = useStore.getState().cards;
+          const newCard = newCards.find(c => 
+            c.bankName === formData.bankName && 
+            c.cardName === formData.cardName &&
+            c.lastFourDigits === formData.lastFourDigits
+          );
+          if (newCard) {
+            applyCardProfile(selectedProfileId, newCard.id);
+            toast.success('Card added with bonus tracking enabled!');
+          }
+        }, 100);
+      } else {
+        toast.success('Card added successfully');
+      }
     }
     onClose();
   };
@@ -125,6 +170,89 @@ export default function CardModal({ card, onClose }: CardModalProps) {
             <X className={`w-5 h-5 ${isLight ? 'text-slate-400' : 'text-zinc-400'}`} />
           </motion.button>
         </div>
+
+        {/* Template Selector (for new cards only) */}
+        <AnimatePresence>
+          {!card && showTemplateSelector && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="px-6 pt-6"
+            >
+              <div className={`p-4 rounded-2xl ${
+                isLight ? 'bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200' : 'bg-gradient-to-br from-violet-500/10 to-indigo-500/10 border border-violet-500/30'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className={`w-4 h-4 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
+                  <span className={`text-sm font-semibold ${isLight ? 'text-violet-700' : 'text-violet-300'}`}>
+                    Start from a template
+                  </span>
+                </div>
+                <p className={`text-xs mb-3 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                  Pre-configured with bonus tracking rules for popular Singapore cards
+                </p>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {CARD_PROFILES.map((profile) => (
+                    <motion.button
+                      key={profile.id}
+                      type="button"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => handleSelectTemplate(profile.id)}
+                      className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-colors ${
+                        isLight ? 'bg-white hover:bg-violet-50' : 'bg-black/20 hover:bg-violet-500/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-5 rounded bg-gradient-to-br ${CARD_COLORS[profile.suggestedColor].gradient}`} />
+                        <div>
+                          <p className="font-medium text-sm">{profile.bankName} {profile.cardName}</p>
+                          <p className={`text-[10px] ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
+                            {profile.bonusRules[0]?.description?.slice(0, 40)}...
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-300' : 'text-zinc-600'}`} />
+                    </motion.button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSkipTemplate}
+                  className={`w-full mt-3 py-2 text-xs font-medium rounded-lg ${
+                    isLight ? 'text-slate-500 hover:bg-slate-100' : 'text-zinc-500 hover:bg-white/5'
+                  }`}
+                >
+                  Skip - Create custom card
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Selected Template Badge */}
+        {selectedProfileId && !showTemplateSelector && (
+          <div className="px-6 pt-4">
+            <div className={`flex items-center justify-between px-3 py-2 rounded-xl ${
+              isLight ? 'bg-emerald-50 border border-emerald-200' : 'bg-emerald-500/10 border border-emerald-500/30'
+            }`}>
+              <div className="flex items-center gap-2">
+                <Check className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                <span className={`text-xs font-medium ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>
+                  Template: {CARD_PROFILES.find(p => p.id === selectedProfileId)?.bankName} {CARD_PROFILES.find(p => p.id === selectedProfileId)?.cardName}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTemplateSelector(true)}
+                className={`text-xs ${isLight ? 'text-emerald-600 hover:text-emerald-700' : 'text-emerald-400 hover:text-emerald-300'}`}
+              >
+                Change
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Card Preview */}
         <div className="px-6 pt-6">
