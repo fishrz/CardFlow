@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, DollarSign, FileText, Tag, ArrowDownLeft, ArrowUpRight, CreditCard, Zap } from 'lucide-react';
-import { TransactionCategory, CATEGORY_CONFIG, CARD_COLORS } from '../types';
+import { TransactionCategory, CATEGORY_CONFIG, CARD_COLORS, Transaction } from '../types';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
 import DatePicker from './DatePicker';
@@ -11,20 +11,23 @@ import { format } from 'date-fns';
 interface TransactionModalProps {
   preselectedCardId: string | null;
   onClose: () => void;
+  editTransaction?: Transaction | null; // Optional: for editing existing transactions
 }
 
-export default function TransactionModal({ preselectedCardId, onClose }: TransactionModalProps) {
-  const { cards, addTransaction } = useStore();
+export default function TransactionModal({ preselectedCardId, onClose, editTransaction }: TransactionModalProps) {
+  const { cards, addTransaction, updateTransaction } = useStore();
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   
+  const isEditing = !!editTransaction;
+  
   const [formData, setFormData] = useState({
-    cardId: preselectedCardId || '',
-    amount: 0,
-    description: '',
-    category: 'other' as TransactionCategory,
-    date: format(new Date(), 'yyyy-MM-dd'),
-    isPayment: false,
+    cardId: editTransaction?.cardId || preselectedCardId || '',
+    amount: editTransaction?.amount || 0,
+    description: editTransaction?.description || '',
+    category: (editTransaction?.category || 'other') as TransactionCategory,
+    date: editTransaction?.date || format(new Date(), 'yyyy-MM-dd'),
+    isPayment: editTransaction?.isPayment || false,
   });
 
   useEffect(() => {
@@ -48,16 +51,30 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
       return;
     }
 
-    addTransaction({
-      cardId: formData.cardId,
-      amount: formData.amount,
-      description: formData.description || (formData.isPayment ? 'Payment' : 'Transaction'),
-      category: formData.category,
-      date: formData.date,
-      isPayment: formData.isPayment,
-    });
-
-    toast.success(formData.isPayment ? 'Payment recorded' : 'Transaction added');
+    if (isEditing && editTransaction) {
+      // Update existing transaction
+      updateTransaction(editTransaction.id, {
+        cardId: formData.cardId,
+        amount: formData.amount,
+        description: formData.description || (formData.isPayment ? 'Payment' : 'Transaction'),
+        category: formData.category,
+        date: formData.date,
+        isPayment: formData.isPayment,
+      });
+      toast.success('Transaction updated');
+    } else {
+      // Add new transaction
+      addTransaction({
+        cardId: formData.cardId,
+        amount: formData.amount,
+        description: formData.description || (formData.isPayment ? 'Payment' : 'Transaction'),
+        category: formData.category,
+        date: formData.date,
+        isPayment: formData.isPayment,
+      });
+      toast.success(formData.isPayment ? 'Payment recorded' : 'Transaction added');
+    }
+    
     onClose();
   };
 
@@ -127,7 +144,10 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
               )}
             </div>
             <h2 className="text-xl font-semibold">
-              {formData.isPayment ? 'Record Payment' : 'Add Transaction'}
+              {isEditing 
+                ? (formData.isPayment ? 'Edit Payment' : 'Edit Transaction')
+                : (formData.isPayment ? 'Record Payment' : 'Add Transaction')
+              }
             </h2>
           </div>
           <motion.button
@@ -346,7 +366,10 @@ export default function TransactionModal({ preselectedCardId, onClose }: Transac
                   : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500'
               }`}
             >
-              {formData.isPayment ? 'Record Payment' : 'Add Transaction'}
+              {isEditing 
+                ? 'Save Changes' 
+                : (formData.isPayment ? 'Record Payment' : 'Add Transaction')
+              }
             </motion.button>
           </div>
         </form>

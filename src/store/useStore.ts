@@ -84,11 +84,45 @@ export const useStore = create<AppState>()(
       },
       
       updateTransaction: (id, updates) => {
-        set((state) => ({
-          transactions: state.transactions.map((t) =>
-            t.id === id ? { ...t, ...updates } : t
-          ),
-        }));
+        const oldTransaction = get().transactions.find((t) => t.id === id);
+        if (!oldTransaction) return;
+        
+        set((state) => {
+          const newTransaction = { ...oldTransaction, ...updates };
+          
+          // Calculate balance change: reverse old, apply new
+          // If amount or isPayment status changed, we need to adjust the balance
+          const oldBalanceEffect = oldTransaction.isPayment ? -oldTransaction.amount : oldTransaction.amount;
+          const newBalanceEffect = newTransaction.isPayment ? -newTransaction.amount : newTransaction.amount;
+          const balanceAdjustment = newBalanceEffect - oldBalanceEffect;
+          
+          // Handle card change: if cardId changed, update both cards
+          const oldCardId = oldTransaction.cardId;
+          const newCardId = updates.cardId || oldCardId;
+          const cardChanged = oldCardId !== newCardId;
+          
+          return {
+            transactions: state.transactions.map((t) =>
+              t.id === id ? newTransaction : t
+            ),
+            cards: state.cards.map((c) => {
+              if (cardChanged) {
+                // Remove effect from old card
+                if (c.id === oldCardId) {
+                  return { ...c, currentBalance: Math.max(0, c.currentBalance - oldBalanceEffect) };
+                }
+                // Add effect to new card
+                if (c.id === newCardId) {
+                  return { ...c, currentBalance: Math.max(0, c.currentBalance + newBalanceEffect) };
+                }
+              } else if (c.id === oldCardId) {
+                // Same card, just adjust the balance
+                return { ...c, currentBalance: Math.max(0, c.currentBalance + balanceAdjustment) };
+              }
+              return c;
+            }),
+          };
+        });
       },
       
       deleteTransaction: (id) => {

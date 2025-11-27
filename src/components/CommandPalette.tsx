@@ -8,7 +8,7 @@ import {
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { TransactionCategory, CATEGORY_CONFIG, CARD_COLORS } from '../types';
-import { format } from 'date-fns';
+import { format, parse, isValid, setYear, getYear } from 'date-fns';
 import toast from 'react-hot-toast';
 
 interface CommandPaletteProps {
@@ -25,6 +25,8 @@ interface ParsedCommand {
   cardMatch: string;
   description: string;
   category: TransactionCategory;
+  date: string; // yyyy-MM-dd format
+  dateDisplay: string | null; // Human-readable date if detected
 }
 
 // Fuzzy match helper
@@ -65,6 +67,144 @@ function detectCategory(text: string): TransactionCategory {
   return 'other';
 }
 
+// Month name mappings
+const MONTH_NAMES: Record<string, number> = {
+  'jan': 0, 'january': 0,
+  'feb': 1, 'february': 1,
+  'mar': 2, 'march': 2,
+  'apr': 3, 'april': 3,
+  'may': 4,
+  'jun': 5, 'june': 5,
+  'jul': 6, 'july': 6,
+  'aug': 7, 'august': 7,
+  'sep': 8, 'sept': 8, 'september': 8,
+  'oct': 9, 'october': 9,
+  'nov': 10, 'november': 10,
+  'dec': 11, 'december': 11,
+};
+
+interface DateParseResult {
+  date: Date;
+  matchedText: string;
+}
+
+// Parse date from natural language input
+function detectDate(text: string): DateParseResult | null {
+  const lowerText = text.toLowerCase();
+  const today = new Date();
+  const currentYear = getYear(today);
+  
+  // Pattern 1: "25 Nov", "25 November", "25th Nov", "25th of Nov"
+  const pattern1 = /\b(\d{1,2})(?:st|nd|rd|th)?(?:\s+of)?\s+(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/i;
+  const match1 = text.match(pattern1);
+  if (match1) {
+    const day = parseInt(match1[1], 10);
+    const monthStr = match1[2].toLowerCase();
+    const month = MONTH_NAMES[monthStr.replace(/ember|uary|ch|il|e|y|ust|ober/g, (m) => {
+      // Find the key that starts with the beginning of monthStr
+      for (const key of Object.keys(MONTH_NAMES)) {
+        if (monthStr.startsWith(key.substring(0, 3))) {
+          return '';
+        }
+      }
+      return '';
+    })] ?? MONTH_NAMES[monthStr.substring(0, 3)];
+    
+    if (month !== undefined && day >= 1 && day <= 31) {
+      let date = new Date(currentYear, month, day);
+      // If the date is in the future by more than 2 months, assume last year
+      // This helps with entries like "25 Dec" in January
+      if (date > today && (date.getMonth() - today.getMonth() > 2 || 
+          (date.getMonth() - today.getMonth() < 0 && date.getMonth() + 12 - today.getMonth() > 2))) {
+        date = setYear(date, currentYear - 1);
+      }
+      if (isValid(date)) {
+        return { date, matchedText: match1[0] };
+      }
+    }
+  }
+  
+  // Pattern 2: "Nov 25", "November 25", "Nov 25th"
+  const pattern2 = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})(?:st|nd|rd|th)?\b/i;
+  const match2 = text.match(pattern2);
+  if (match2) {
+    const monthStr = match2[1].toLowerCase();
+    const day = parseInt(match2[2], 10);
+    const month = MONTH_NAMES[monthStr.substring(0, 3)];
+    
+    if (month !== undefined && day >= 1 && day <= 31) {
+      let date = new Date(currentYear, month, day);
+      if (date > today && (date.getMonth() - today.getMonth() > 2 || 
+          (date.getMonth() - today.getMonth() < 0 && date.getMonth() + 12 - today.getMonth() > 2))) {
+        date = setYear(date, currentYear - 1);
+      }
+      if (isValid(date)) {
+        return { date, matchedText: match2[0] };
+      }
+    }
+  }
+  
+  // Pattern 3: "25/11", "25-11", "25.11" (day/month format common in Singapore)
+  const pattern3 = /\b(\d{1,2})[\/\-\.](\d{1,2})\b/;
+  const match3 = text.match(pattern3);
+  if (match3) {
+    const num1 = parseInt(match3[1], 10);
+    const num2 = parseInt(match3[2], 10);
+    
+    // Assume day/month format (Singapore style)
+    if (num1 >= 1 && num1 <= 31 && num2 >= 1 && num2 <= 12) {
+      let date = new Date(currentYear, num2 - 1, num1);
+      if (date > today && (date.getMonth() - today.getMonth() > 2 || 
+          (date.getMonth() - today.getMonth() < 0 && date.getMonth() + 12 - today.getMonth() > 2))) {
+        date = setYear(date, currentYear - 1);
+      }
+      if (isValid(date)) {
+        return { date, matchedText: match3[0] };
+      }
+    }
+  }
+  
+  // Pattern 4: "yesterday", "today"
+  if (lowerText.includes('yesterday')) {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    return { date: yesterday, matchedText: 'yesterday' };
+  }
+  
+  if (lowerText.includes('today')) {
+    return { date: today, matchedText: 'today' };
+  }
+  
+  // Pattern 5: "last monday", "last tue", etc.
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const shortDayNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const lastDayPattern = /\blast\s+(sun(?:day)?|mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?)\b/i;
+  const matchLastDay = text.match(lastDayPattern);
+  if (matchLastDay) {
+    const dayStr = matchLastDay[1].toLowerCase();
+    let targetDay = -1;
+    
+    for (let i = 0; i < dayNames.length; i++) {
+      if (dayNames[i].startsWith(dayStr) || shortDayNames[i] === dayStr.substring(0, 3)) {
+        targetDay = i;
+        break;
+      }
+    }
+    
+    if (targetDay >= 0) {
+      const currentDay = today.getDay();
+      let daysAgo = currentDay - targetDay;
+      if (daysAgo <= 0) daysAgo += 7;
+      
+      const date = new Date(today);
+      date.setDate(date.getDate() - daysAgo);
+      return { date, matchedText: matchLastDay[0] };
+    }
+  }
+  
+  return null;
+}
+
 export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpenCardSelector }: CommandPaletteProps) {
   const [input, setInput] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -83,12 +223,21 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
     let cardMatch = '';
     let description = '';
     
+    // Detect date first
+    const dateResult = detectDate(input);
+    const date = dateResult ? format(dateResult.date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
+    const dateDisplay = dateResult ? format(dateResult.date, 'MMM d, yyyy') : null;
+    
     // Check for payment keywords
     const paymentKeywords = ['pay', 'paid', 'payment', 'repay'];
     const isPayment = paymentKeywords.some(k => input.toLowerCase().includes(k));
     
-    // Find amount (any number in the input)
+    // Find amount (any number in the input, but not if it looks like part of a date)
     for (const part of parts) {
+      // Skip if this part is part of the matched date text
+      if (dateResult && dateResult.matchedText.toLowerCase().includes(part.toLowerCase())) {
+        continue;
+      }
       const num = parseFloat(part.replace(/[,$]/g, ''));
       if (!isNaN(num) && num > 0) {
         amount = num;
@@ -121,6 +270,11 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
     }
     
     // Build description from non-numeric, non-card parts
+    // Also filter out date-related words
+    const dateWords = dateResult 
+      ? dateResult.matchedText.toLowerCase().split(/\s+/)
+      : [];
+    
     description = parts
       .filter(p => isNaN(parseFloat(p.replace(/[,$]/g, ''))))
       .filter(p => !cards.some(c => 
@@ -129,6 +283,8 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
         c.lastFourDigits.includes(p)
       ))
       .filter(p => !paymentKeywords.includes(p.toLowerCase()))
+      .filter(p => !dateWords.includes(p.toLowerCase()))
+      .filter(p => !['on', 'at', 'yesterday', 'today', 'last'].includes(p.toLowerCase()))
       .join(' ');
     
     if (amount > 0) {
@@ -137,7 +293,7 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
     
     const category = detectCategory(description || input);
     
-    return { type, amount, cardId, cardMatch, description, category };
+    return { type, amount, cardId, cardMatch, description, category, date, dateDisplay };
   }, [input, cards]);
 
   // Quick actions
@@ -252,14 +408,15 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
       amount: parsedCommand.amount,
       description: parsedCommand.description || (parsedCommand.type === 'payment' ? 'Payment' : 'Expense'),
       category: parsedCommand.category,
-      date: format(new Date(), 'yyyy-MM-dd'),
+      date: parsedCommand.date,
       isPayment: parsedCommand.type === 'payment',
     });
     
+    const dateInfo = parsedCommand.dateDisplay ? ` on ${parsedCommand.dateDisplay}` : '';
     toast.success(
       parsedCommand.type === 'payment' 
-        ? `💰 Payment of $${parsedCommand.amount.toFixed(2)} recorded`
-        : `✓ $${parsedCommand.amount.toFixed(2)} ${parsedCommand.description} added`
+        ? `💰 Payment of $${parsedCommand.amount.toFixed(2)} recorded${dateInfo}`
+        : `✓ $${parsedCommand.amount.toFixed(2)} ${parsedCommand.description} added${dateInfo}`
     );
     
     onClose();
@@ -372,6 +529,11 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
                       <p className={`text-sm ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
                         {parsedCommand.type === 'payment' ? 'Payment' : parsedCommand.description || 'Expense'} 
                         {parsedCommand.type === 'expense' && ` • ${CATEGORY_CONFIG[parsedCommand.category].icon}`}
+                        {parsedCommand.dateDisplay && (
+                          <span className={`ml-1 ${isLight ? 'text-violet-600' : 'text-violet-400'}`}>
+                            • 📅 {parsedCommand.dateDisplay}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>

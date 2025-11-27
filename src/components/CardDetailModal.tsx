@@ -1,10 +1,12 @@
-import { motion } from 'framer-motion';
-import { X, Edit3, Plus, Trash2, TrendingUp, TrendingDown, Calendar, Wifi, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Edit3, Plus, Trash2, TrendingUp, TrendingDown, Calendar, Wifi, ArrowUpRight, ArrowDownLeft, Pencil } from 'lucide-react';
 import { CreditCard, CARD_COLORS, CATEGORY_CONFIG, Transaction } from '../types';
 import { useStore } from '../store/useStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { format, differenceInDays, setDate, addMonths, isBefore, startOfDay } from 'date-fns';
 import toast from 'react-hot-toast';
+import TransactionModal from './TransactionModal';
 
 interface CardDetailModalProps {
   card: CreditCard;
@@ -19,6 +21,8 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
   const isLight = theme === 'light';
   const transactions = getTransactionsByCard(card.id);
   const colorConfig = CARD_COLORS[card.color];
+  
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   // Calculate days until due
   const today = startOfDay(new Date());
@@ -245,7 +249,7 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
                             <p className={`font-semibold ${
                               transaction.isPayment 
                                 ? (isLight ? 'text-emerald-600' : 'text-emerald-400')
@@ -253,6 +257,16 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
                             }`}>
                               {transaction.isPayment ? '-' : '+'}${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => setEditingTransaction(transaction)}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all ${
+                                isLight ? 'hover:bg-violet-100' : 'hover:bg-violet-500/20'
+                              }`}
+                            >
+                              <Pencil className={`w-4 h-4 ${isLight ? 'text-violet-500' : 'text-violet-400'}`} />
+                            </motion.button>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -274,6 +288,17 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
           )}
         </div>
       </motion.div>
+      
+      {/* Edit Transaction Modal */}
+      <AnimatePresence>
+        {editingTransaction && (
+          <TransactionModal
+            preselectedCardId={card.id}
+            editTransaction={editingTransaction}
+            onClose={() => setEditingTransaction(null)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
