@@ -1,8 +1,8 @@
-# 💳 CardFlow
+# 💳 Swipe
 
 A beautifully crafted credit card tracker designed for the future. Manage multiple credit cards, track due dates, optimize rewards, and gain insights into your spending — all in one stunning interface.
 
-![CardFlow](https://img.shields.io/badge/React-18.2-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6?logo=typescript) ![Tailwind](https://img.shields.io/badge/Tailwind-3.3-06B6D4?logo=tailwindcss) ![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite)
+![Swipe](https://img.shields.io/badge/React-18.2-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6?logo=typescript) ![Tailwind](https://img.shields.io/badge/Tailwind-3.3-06B6D4?logo=tailwindcss) ![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite)
 
 ## ✨ Features
 
@@ -50,9 +50,16 @@ A beautifully crafted credit card tracker designed for the future. Manage multip
 - **Miles conversion** — See estimated KrisFlyer miles from yuu points
 - **More card profiles** — OCBC 365, UOB One pre-configured
 
-### ⚙️ Settings & Data Vault (NEW!)
+### ☁️ Google Drive Sync (NEW!)
+- **Automatic backup** — Your data syncs to your Google Drive automatically
+- **Cross-device access** — Access your cards from any device
+- **Offline support** — Works offline, syncs when back online
+- **Privacy first** — Data stored in YOUR Drive, we never see it
+- **One-click setup** — Connect with your Google account in seconds
+
+### ⚙️ Settings & Data Vault
 - **Export to JSON** — Backup all cards, transactions, and bonus rules
-- **Import from JSON** — Restore from any CardFlow backup file
+- **Import from JSON** — Restore from any Swipe backup file
 - **Privacy stats** — See counts of cards, transactions, and rules
 - **Clear all data** — Start fresh with confirmation safety
 - **Theme preferences** — Switch between dark and light mode
@@ -107,7 +114,7 @@ Then open **http://localhost:3000** in your browser.
 
 ## 🛡️ Privacy First
 
-**All data stays on your device.** CardFlow uses browser localStorage for persistence — no servers, no accounts, no tracking. Your financial data never leaves your computer.
+**All data stays on your device.** Swipe uses browser localStorage for persistence — no servers, no accounts, no tracking. Your financial data never leaves your computer.
 
 ## 🏗️ Tech Stack
 
@@ -125,7 +132,7 @@ Then open **http://localhost:3000** in your browser.
 
 ## 📱 Responsive Design
 
-CardFlow is fully responsive and works beautifully on:
+Swipe is fully responsive and works beautifully on:
 - 🖥️ Desktop (optimized for wide screens)
 - 💻 Laptop
 - 📱 Mobile (with floating action button for Quick Log)

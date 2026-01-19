@@ -255,10 +255,10 @@ export interface CardProfile {
 // DATA EXPORT/IMPORT TYPES
 // ============================================
 
-export interface CardFlowExport {
+export interface SwipeExport {
   // Metadata
   version: string;               // Export format version
-  appVersion: string;            // CardFlow app version
+  appVersion: string;            // Swipe app version
   exportedAt: string;            // ISO timestamp
   
   // Core Data

@@ -1,4 +1,4 @@
-# 🚀 CardFlow v2.0 Feature Proposals
+# 🚀 Swipe v2.0 Feature Proposals
 
 > **Version:** 2.0  
 > **Date:** November 2025  
@@ -191,10 +191,10 @@ Allow users to export all data to JSON and import it back, enabling:
 ### Data Structure
 
 ```typescript
-interface CardFlowExport {
+interface SwipeExport {
   // Metadata
   version: string;               // Export format version
-  appVersion: string;            // CardFlow app version
+  appVersion: string;            // Swipe app version
   exportedAt: string;            // ISO timestamp
   
   // Core Data
@@ -280,7 +280,7 @@ interface CardFlowExport {
 │ └─────────────────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────────────────┐ │
 │ │ Import Data                                             │ │
-│ │ Restore from a CardFlow backup file                     │ │
+│ │ Restore from a Swipe backup file                     │ │
 │ │ [📤 Import from JSON]                                   │ │
 │ └─────────────────────────────────────────────────────────┘ │
 │                                                             │

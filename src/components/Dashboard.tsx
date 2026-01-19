@@ -11,6 +11,7 @@ import StatsCard from './StatsCard';
 import UpcomingPayments from './UpcomingPayments';
 import EmptyState from './EmptyState';
 import ThemeToggle from './ThemeToggle';
+import SyncStatus from './SyncStatus';
 import { format } from 'date-fns';
 
 interface DashboardProps {
@@ -93,7 +94,7 @@ export default function Dashboard({
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gradient">CardFlow</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-gradient">Swipe</h1>
               </motion.div>
               <p className={`text-lg ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
                 {format(new Date(), 'EEEE, MMMM d, yyyy')}
@@ -118,6 +119,9 @@ export default function Dashboard({
                   isLight ? 'bg-slate-200 text-slate-500' : 'bg-white/10 text-zinc-500'
                 }`}>⌘K</kbd>
               </motion.button>
+              
+              {/* Sync Status */}
+              <SyncStatus onClick={onOpenSettings} />
               
               {/* Theme Toggle */}
               <ThemeToggle />

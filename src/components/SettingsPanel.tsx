@@ -2,15 +2,17 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Settings, Download, Upload, AlertTriangle, 
-  CheckCircle, Database, FileJson, Trash2, Moon, Sun,
-  Shield, Info
+  Database, FileJson, Trash2, Moon, Sun,
+  Shield, Cloud, RefreshCw, LogOut,
+  Loader2
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useBonusStore } from '../store/useBonusStore';
 import { useThemeStore } from '../store/useThemeStore';
-import { CardFlowExport } from '../types';
+import { useSyncStore } from '../store/useSyncStore';
+import { SwipeExport } from '../types';
 import toast from 'react-hot-toast';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -28,11 +30,21 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { cards, transactions } = useStore();
   const { bonusRules } = useBonusStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { 
+    isConfigured: isSyncConfigured,
+    isConnected, 
+    user, 
+    syncStatus, 
+    lastSyncTime,
+    connect, 
+    disconnect, 
+    syncNow 
+  } = useSyncStore();
   const isLight = theme === 'light';
 
   // Export data to JSON
   const handleExport = () => {
-    const exportData: CardFlowExport = {
+    const exportData: SwipeExport = {
       version: EXPORT_VERSION,
       appVersion: APP_VERSION,
       exportedAt: new Date().toISOString(),
@@ -58,7 +70,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = `cardflow-backup-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.json`;
+    link.download = `swipe-backup-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -78,7 +90,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const data = JSON.parse(content) as CardFlowExport;
+        const data = JSON.parse(content) as SwipeExport;
         
         // Validate structure
         if (!data.version || !data.cards || !data.transactions) {
@@ -207,7 +219,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
               <div>
                 <h2 className="text-xl font-semibold">Settings</h2>
                 <p className={`text-sm ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                  CardFlow v{APP_VERSION}
+                  Swipe v{APP_VERSION}
                 </p>
               </div>
             </div>
@@ -259,6 +271,124 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 </motion.button>
               </div>
             </div>
+
+            {/* Cloud Sync Section */}
+            {isSyncConfigured && (
+              <div className="mb-8">
+                <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${
+                  isLight ? 'text-slate-600' : 'text-zinc-400'
+                }`}>
+                  <Cloud className="w-4 h-4" />
+                  CLOUD SYNC
+                </h3>
+                
+                {isConnected ? (
+                  <div className={`p-4 rounded-xl ${
+                    isLight ? 'bg-emerald-50 border border-emerald-200' : 'bg-emerald-500/10 border border-emerald-500/30'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-full overflow-hidden flex-shrink-0 ${
+                        isLight ? 'bg-emerald-100' : 'bg-emerald-500/20'
+                      }`}>
+                        {user?.picture ? (
+                          <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Cloud className={`w-5 h-5 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className={`font-medium ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>
+                          Google Drive Connected
+                        </h4>
+                        <p className={`text-sm truncate ${isLight ? 'text-emerald-600/80' : 'text-emerald-300/80'}`}>
+                          {user?.email}
+                        </p>
+                        <p className={`text-xs mt-1 ${isLight ? 'text-emerald-600/60' : 'text-emerald-300/60'}`}>
+                          {lastSyncTime 
+                            ? `Last synced ${formatDistanceToNow(new Date(lastSyncTime), { addSuffix: true })}`
+                            : 'Not synced yet'
+                          }
+                        </p>
+                        
+                        <div className="flex items-center gap-2 mt-3">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => syncNow()}
+                            disabled={syncStatus === 'syncing'}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                              isLight 
+                                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 disabled:opacity-50' 
+                                : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 disabled:opacity-50'
+                            }`}
+                          >
+                            {syncStatus === 'syncing' ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Now'}
+                          </motion.button>
+                          
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              disconnect();
+                              toast.success('Disconnected from Google Drive');
+                            }}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                              isLight 
+                                ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' 
+                                : 'bg-white/10 text-zinc-400 hover:bg-white/15'
+                            }`}
+                          >
+                            <LogOut className="w-3.5 h-3.5" />
+                            Disconnect
+                          </motion.button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`p-4 rounded-xl ${
+                    isLight ? 'bg-blue-50 border border-blue-200' : 'bg-blue-500/10 border border-blue-500/30'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      <Cloud className={`w-5 h-5 mt-0.5 ${isLight ? 'text-blue-600' : 'text-blue-400'}`} />
+                      <div className="flex-1">
+                        <h4 className={`font-medium ${isLight ? 'text-blue-700' : 'text-blue-300'}`}>
+                          Google Drive Sync
+                        </h4>
+                        <p className={`text-sm mb-3 ${isLight ? 'text-blue-600/80' : 'text-blue-300/80'}`}>
+                          Automatically backup your data to Google Drive. Access from any device.
+                        </p>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={async () => {
+                            try {
+                              await connect();
+                              toast.success('Connected to Google Drive!');
+                            } catch (error) {
+                              toast.error('Failed to connect');
+                            }
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white ${
+                            'bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25'
+                          }`}
+                        >
+                          <Cloud className="w-4 h-4" />
+                          Connect Google Drive
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Data Management Section */}
             <div className="mb-8">
@@ -328,7 +458,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                       Import Data
                     </h4>
                     <p className={`text-sm mb-3 ${isLight ? 'text-blue-600/80' : 'text-blue-300/80'}`}>
-                      Restore from a CardFlow backup file
+                      Restore from a Swipe backup file
                     </p>
                     <input
                       ref={fileInputRef}

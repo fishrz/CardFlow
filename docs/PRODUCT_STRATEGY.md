@@ -1,4 +1,4 @@
-# 🎯 CardFlow Product Strategy
+# 🎯 Swipe Product Strategy
 
 > **Version:** 1.0  
 > **Date:** November 2025  
@@ -26,7 +26,7 @@
 Users don't want to track spending — they want to **maximize value from every transaction**. The real pain isn't recording expenses; it's the cognitive load of remembering which card gives 10% at groceries, which has 5% on dining, and which is approaching its minimum spend requirement.
 
 **User Story:**
-> Sarah is at Cold Storage checkout. She opens CardFlow, taps "Buying Groceries $85" — instantly sees: "Use OCBC 365 Card (8% cashback) instead of your DBS (1%). You'll save $5.95."
+> Sarah is at Cold Storage checkout. She opens Swipe, taps "Buying Groceries $85" — instantly sees: "Use OCBC 365 Card (8% cashback) instead of your DBS (1%). You'll save $5.95."
 
 **Market Hook:**
 No competitor in Singapore does real-time card optimization for multiple cards. This is a **daily utility** that creates habit-forming usage.
@@ -48,7 +48,7 @@ No competitor in Singapore does real-time card optimization for multiple cards. 
 The fundamental problem isn't "tracking" — it's **data entry friction**. Users abandon finance apps because manual entry is tedious. Bank statements contain ALL the data, but extracting it is painful.
 
 **User Story:**
-> Marcus downloads his HSBC statement PDF, drags it into CardFlow. In 3 seconds, all 47 transactions are parsed, categorized, and his balance is updated. He reviews, tweaks 2 categories, done.
+> Marcus downloads his HSBC statement PDF, drags it into Swipe. In 3 seconds, all 47 transactions are parsed, categorized, and his balance is updated. He reviews, tweaks 2 categories, done.
 
 **Market Hook:**
 This eliminates the #1 reason users abandon personal finance apps. With local LLMs (Ollama) or cloud OCR, this is now feasible without compromising privacy.
@@ -71,10 +71,10 @@ This eliminates the #1 reason users abandon personal finance apps. With local LL
 Users don't fear due dates — they fear **the consequences**: interest charges ($50+), credit score damage, lost rewards. Current solutions show dates, but don't show *stakes*.
 
 **User Story:**
-> CardFlow notification 3 days before due: "⚠️ Your UOB has $2,340 due Friday. If unpaid: $45 interest + lose 5,200 UNI$ rewards. [Pay Now] [Remind Tomorrow]"
+> Swipe notification 3 days before due: "⚠️ Your UOB has $2,340 due Friday. If unpaid: $45 interest + lose 5,200 UNI$ rewards. [Pay Now] [Remind Tomorrow]"
 
 **Market Hook:**
-Transform passive tracking into **proactive financial protection**. This creates emotional value — users feel CardFlow "has their back."
+Transform passive tracking into **proactive financial protection**. This creates emotional value — users feel Swipe "has their back."
 
 **Implementation Gist:**
 ```
@@ -94,7 +94,7 @@ Transform passive tracking into **proactive financial protection**. This creates
 Raw transaction lists are **meaningless**. Users want to understand their money *behavior* — where it goes, how it changes, and whether they're improving.
 
 **User Story:**
-> On the 1st of each month, CardFlow generates: "November Summary: You spent $4,230 across 6 cards. 📈 Dining up 23% from October. 🎯 You earned $127 in cashback. Your UOB hit minimum spend — $50 bonus unlocked!"
+> On the 1st of each month, Swipe generates: "November Summary: You spent $4,230 across 6 cards. 📈 Dining up 23% from October. 🎯 You earned $127 in cashback. Your UOB hit minimum spend — $50 bonus unlocked!"
 
 **Market Hook:**
 Banks send ugly statements. We send **beautiful insights**. This is shareable, delightful, and builds emotional connection.
@@ -117,10 +117,10 @@ Banks send ugly statements. We send **beautiful insights**. This is shareable, d
 Singapore cards often have $190-500 annual fees. Users forget when fees hit, and don't track if rewards justify the cost. This leads to **silent money leaks**.
 
 **User Story:**
-> CardFlow alert: "Your Citi Prestige ($535/year) renews in 30 days. This year you earned $420 in value. Consider: [Keep] [Call to Waive] [Cancel Card]"
+> Swipe alert: "Your Citi Prestige ($535/year) renews in 30 days. This year you earned $420 in value. Consider: [Keep] [Call to Waive] [Cancel Card]"
 
 **Market Hook:**
-No app tracks fee ROI. This positions CardFlow as a **money-saving tool**, not just a tracker.
+No app tracks fee ROI. This positions Swipe as a **money-saving tool**, not just a tracker.
 
 **Implementation Gist:**
 ```

@@ -14,6 +14,7 @@ import BonusTracker from './components/BonusTracker';
 import SettingsPanel from './components/SettingsPanel';
 import { CreditCard } from './types';
 import { useThemeStore } from './store/useThemeStore';
+import { useSyncStore } from './store/useSyncStore';
 
 export default function App() {
   // Modal states
@@ -33,6 +34,7 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const { theme, setTheme } = useThemeStore();
+  const { initialize: initializeSync } = useSyncStore();
   const isLight = theme === 'light';
 
   // Initialize theme on mount
@@ -46,6 +48,11 @@ export default function App() {
       setTheme('dark');
     }
   }, [setTheme]);
+
+  // Initialize Google Drive sync
+  useEffect(() => {
+    initializeSync();
+  }, [initializeSync]);
 
   // Global keyboard shortcuts
   useEffect(() => {

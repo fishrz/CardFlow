@@ -58,7 +58,7 @@ export default function EmptyState({ onAddCard }: EmptyStateProps) {
         transition={{ delay: 0.5 }}
         className="mb-6"
       >
-        <h2 className="text-3xl font-bold mb-3">Welcome to CardFlow</h2>
+        <h2 className="text-3xl font-bold mb-3">Welcome to Swipe</h2>
         <p className={`text-lg max-w-md ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
           Start by adding your credit cards to track payments, due dates, and spending all in one beautiful place.
         </p>

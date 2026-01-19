@@ -1,5 +1,5 @@
 {
-  "name": "cardflow",
+  "name": "swipe",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,14 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.4",
+    "lucide-react": "^0.292.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "framer-motion": "^10.16.4",
-    "zustand": "^4.4.6",
-    "date-fns": "^2.30.0",
-    "lucide-react": "^0.292.0",
     "react-hot-toast": "^2.4.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
