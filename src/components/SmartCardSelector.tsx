@@ -324,12 +324,16 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
           <div className="p-6 overflow-y-auto max-h-[calc(85vh-120px)]">
             {/* Amount Input */}
             <div className="mb-6">
-              <label className={`block text-sm font-medium mb-2 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+              <label
+                htmlFor="purchase-amount"
+                className={`block text-sm font-medium mb-2 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}
+              >
                 Purchase Amount
               </label>
               <div className="relative">
                 <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-lg ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>$</span>
                 <input
+                  id="purchase-amount"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
@@ -347,7 +351,7 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
               <label className={`block text-sm font-medium mb-3 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
                 What are you buying?
               </label>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                 {categories.map(cat => (
                   <motion.button
                     key={cat}

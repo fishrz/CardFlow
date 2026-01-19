@@ -261,7 +261,7 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() => setEditingTransaction(transaction)}
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all ${
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all ${
                                 isLight ? 'hover:bg-violet-100' : 'hover:bg-violet-500/20'
                               }`}
                             >
@@ -271,7 +271,7 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() => handleDeleteTransaction(transaction)}
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all ${
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all ${
                                 isLight ? 'hover:bg-red-100' : 'hover:bg-red-500/20'
                               }`}
                             >

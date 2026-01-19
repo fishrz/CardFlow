@@ -100,7 +100,7 @@ export default function UpcomingPayments({ payments, onViewCard, onAddTransactio
                   e.stopPropagation();
                   onAddTransaction(payment.card.id);
                 }}
-                className={`mt-4 w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm transition-colors opacity-0 group-hover:opacity-100 ${
+                className={`mt-4 w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 ${
                   isLight 
                     ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' 
                     : 'bg-white/5 hover:bg-white/10 text-zinc-300'

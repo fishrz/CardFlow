@@ -307,7 +307,7 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
                 <Tag className="w-4 h-4" />
                 Category
               </label>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                 {categories.map((cat) => {
                   const config = CATEGORY_CONFIG[cat];
                   return (
