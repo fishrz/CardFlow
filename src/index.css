@@ -5,28 +5,28 @@
 /* ===== THEME VARIABLES ===== */
 :root {
   /* Default to dark theme */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-tertiary: #1a1a24;
+  --bg-primary: #070a0e;
+  --bg-secondary: #0b1118;
+  --bg-tertiary: #121b26;
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --accent-purple: #8b5cf6;
-  --accent-blue: #3b82f6;
-  --accent-cyan: #06b6d4;
+  --text-secondary: #a6b0be;
+  --text-muted: #6d7a8a;
+  --accent-purple: #2ee8a2;
+  --accent-blue: #00c2ff;
+  --accent-cyan: #ffb000;
   
   /* Glass effects */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-bg-strong: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-strong: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.035);
+  --glass-bg-strong: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-strong: rgba(255, 255, 255, 0.16);
   
   /* Mesh background */
-  --mesh-color-1: rgba(139, 92, 246, 0.15);
-  --mesh-color-2: rgba(6, 182, 212, 0.1);
-  --mesh-color-3: rgba(99, 102, 241, 0.1);
-  --mesh-color-4: rgba(16, 185, 129, 0.08);
-  --mesh-color-5: rgba(244, 63, 94, 0.08);
+  --mesh-color-1: rgba(46, 232, 162, 0.14);  /* mint */
+  --mesh-color-2: rgba(0, 194, 255, 0.10);   /* electric sky */
+  --mesh-color-3: rgba(255, 176, 0, 0.09);   /* saffron */
+  --mesh-color-4: rgba(255, 90, 84, 0.07);   /* coral */
+  --mesh-color-5: rgba(165, 255, 97, 0.06);  /* citrine */
   
   /* Scrollbar */
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
@@ -35,12 +35,12 @@
 
 /* Light theme */
 .light {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f6f7f4;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --bg-tertiary: #eef2f0;
+  --text-primary: #0b1220;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   
   /* Glass effects for light mode */
   --glass-bg: rgba(255, 255, 255, 0.7);
@@ -49,11 +49,11 @@
   --glass-border-strong: rgba(0, 0, 0, 0.12);
   
   /* Mesh background - softer for light mode */
-  --mesh-color-1: rgba(139, 92, 246, 0.08);
-  --mesh-color-2: rgba(6, 182, 212, 0.06);
-  --mesh-color-3: rgba(99, 102, 241, 0.06);
-  --mesh-color-4: rgba(16, 185, 129, 0.05);
-  --mesh-color-5: rgba(244, 63, 94, 0.05);
+  --mesh-color-1: rgba(46, 232, 162, 0.06);
+  --mesh-color-2: rgba(0, 194, 255, 0.05);
+  --mesh-color-3: rgba(255, 176, 0, 0.05);
+  --mesh-color-4: rgba(255, 90, 84, 0.04);
+  --mesh-color-5: rgba(165, 255, 97, 0.035);
   
   /* Scrollbar */
   --scrollbar-thumb: rgba(0, 0, 0, 0.15);
@@ -62,23 +62,23 @@
 
 /* Dark theme (explicit) */
 .dark {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-tertiary: #1a1a24;
+  --bg-primary: #070a0e;
+  --bg-secondary: #0b1118;
+  --bg-tertiary: #121b26;
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-secondary: #a6b0be;
+  --text-muted: #6d7a8a;
   
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-bg-strong: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-strong: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.035);
+  --glass-bg-strong: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-strong: rgba(255, 255, 255, 0.16);
   
-  --mesh-color-1: rgba(139, 92, 246, 0.15);
-  --mesh-color-2: rgba(6, 182, 212, 0.1);
-  --mesh-color-3: rgba(99, 102, 241, 0.1);
-  --mesh-color-4: rgba(16, 185, 129, 0.08);
-  --mesh-color-5: rgba(244, 63, 94, 0.08);
+  --mesh-color-1: rgba(46, 232, 162, 0.14);
+  --mesh-color-2: rgba(0, 194, 255, 0.10);
+  --mesh-color-3: rgba(255, 176, 0, 0.09);
+  --mesh-color-4: rgba(255, 90, 84, 0.07);
+  --mesh-color-5: rgba(165, 255, 97, 0.06);
   
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
@@ -127,16 +127,16 @@ body {
 @layer components {
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
   .glass-strong {
     background: var(--glass-bg-strong);
-    backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
     border: 1px solid var(--glass-border-strong);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
@@ -148,8 +148,8 @@ body {
       var(--glass-bg) 50%,
       transparent 100%
     );
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border-strong);
     transition: background 0.3s ease, border-color 0.3s ease;
   }
@@ -161,7 +161,7 @@ body {
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+    background: linear-gradient(135deg, #2ee8a2 0%, #00c2ff 48%, #ffb000 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -325,6 +325,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Focus styles */
@@ -332,7 +333,7 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 0 2px rgba(46, 232, 162, 0.28);
 }
 
 /* Transition utilities */

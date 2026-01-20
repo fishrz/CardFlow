@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { 
-  Plus, CreditCard as CardIcon, TrendingUp, Calendar, Sparkles,
+  Plus, CreditCard as CardIcon, TrendingUp, Calendar, Sparkles, Pencil,
   Command, BarChart3, AlertTriangle, Receipt, Target, Settings
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
@@ -13,6 +13,7 @@ import EmptyState from './EmptyState';
 import ThemeToggle from './ThemeToggle';
 import SyncStatus from './SyncStatus';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 interface DashboardProps {
   onAddCard: () => void;
@@ -73,6 +74,15 @@ export default function Dashboard({
     },
   };
 
+  const handleRecord = () => {
+    if (cards.length === 0) {
+      toast.error('Add a card first to record transactions');
+      onAddCard();
+      return;
+    }
+    onAddTransaction();
+  };
+
   return (
     <div className="min-h-screen px-4 py-8 md:px-8 lg:px-16">
       <motion.div
@@ -102,6 +112,21 @@ export default function Dashboard({
             </div>
             
             <div className="flex items-center gap-3">
+              {/* Mobile Command Palette Trigger */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onOpenCommandPalette}
+                className={`md:hidden w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                  isLight
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                    : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+                }`}
+                title="Quick Log"
+              >
+                <Command className="w-5 h-5" />
+              </motion.button>
+
               {/* Command Palette Trigger */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -142,10 +167,36 @@ export default function Dashboard({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onAddCard}
-                className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-violet-500/25 text-white"
+                className="hidden md:flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-violet-500/25 text-white"
               >
                 <Plus className="w-5 h-5" />
                 <span className="font-medium">Add Card</span>
+              </motion.button>
+
+              {/* Mobile primary CTA: record a transaction */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleRecord}
+                className="md:hidden flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 shadow-lg shadow-emerald-500/25 text-white"
+              >
+                <Pencil className="w-5 h-5" />
+                <span className="font-medium">Record</span>
+              </motion.button>
+
+              {/* Mobile secondary CTA: add a card */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onAddCard}
+                className={`md:hidden w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                  isLight
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                    : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+                }`}
+                title="Add Card"
+              >
+                <Plus className="w-5 h-5" />
               </motion.button>
             </div>
           </div>
@@ -361,17 +412,18 @@ export default function Dashboard({
           </>
         )}
 
-        {/* Mobile FAB - Opens Command Palette */}
+        {/* Mobile FAB - Opens Transaction Modal */}
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={onOpenCommandPalette}
-          className="md:hidden fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-violet-500/30 z-50"
+          onClick={handleRecord}
+          className="md:hidden fixed bottom-6 right-6 h-14 px-5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 z-50"
         >
-          <Command className="w-7 h-7 text-white" />
+          <Pencil className="w-6 h-6 text-white" />
+          <span className="text-sm font-semibold text-white">Record</span>
         </motion.button>
       </motion.div>
     </div>
