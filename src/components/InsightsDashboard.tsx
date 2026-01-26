@@ -173,7 +173,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
           }`}>
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                isLight ? 'bg-gradient-to-br from-violet-100 to-indigo-100' : 'bg-gradient-to-br from-violet-500/20 to-indigo-500/20'
+                isLight ? 'bg-linear-to-br from-violet-100 to-indigo-100' : 'bg-linear-to-br from-violet-500/20 to-indigo-500/20'
               }`}>
                 <BarChart3 className={`w-6 h-6 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
               </div>
@@ -238,7 +238,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 className={`p-4 rounded-2xl ${
-                  isLight ? 'bg-gradient-to-br from-violet-50 to-indigo-50' : 'bg-gradient-to-br from-violet-500/10 to-indigo-500/10'
+                  isLight ? 'bg-linear-to-br from-violet-50 to-indigo-50' : 'bg-linear-to-br from-violet-500/10 to-indigo-500/10'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -262,7 +262,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
                 className={`p-4 rounded-2xl ${
-                  isLight ? 'bg-gradient-to-br from-emerald-50 to-teal-50' : 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10'
+                  isLight ? 'bg-linear-to-br from-emerald-50 to-teal-50' : 'bg-linear-to-br from-emerald-500/10 to-teal-500/10'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -281,7 +281,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className={`p-4 rounded-2xl ${
-                  isLight ? 'bg-gradient-to-br from-cyan-50 to-sky-50' : 'bg-gradient-to-br from-cyan-500/10 to-sky-500/10'
+                  isLight ? 'bg-linear-to-br from-cyan-50 to-sky-50' : 'bg-linear-to-br from-cyan-500/10 to-sky-500/10'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -300,7 +300,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
                 className={`p-4 rounded-2xl ${
-                  isLight ? 'bg-gradient-to-br from-amber-50 to-orange-50' : 'bg-gradient-to-br from-amber-500/10 to-orange-500/10'
+                  isLight ? 'bg-linear-to-br from-amber-50 to-orange-50' : 'bg-linear-to-br from-amber-500/10 to-orange-500/10'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -400,7 +400,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <div className={`w-8 h-5 rounded bg-gradient-to-r ${CARD_COLORS[item.color as keyof typeof CARD_COLORS]?.gradient || 'from-slate-500 to-slate-600'}`} />
+                            <div className={`w-8 h-5 rounded-sm bg-linear-to-r ${CARD_COLORS[item.color as keyof typeof CARD_COLORS]?.gradient || 'from-slate-500 to-slate-600'}`} />
                             <div>
                               <span className="font-medium text-sm">{item.bankName}</span>
                               <p className={`text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>{item.cardName}</p>
@@ -413,7 +413,7 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                             initial={{ width: 0 }}
                             animate={{ width: `${item.percentage}%` }}
                             transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
-                            className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${CARD_COLORS[item.color as keyof typeof CARD_COLORS]?.gradient || 'from-slate-500 to-slate-600'}`}
+                            className={`absolute inset-y-0 left-0 rounded-full bg-linear-to-r ${CARD_COLORS[item.color as keyof typeof CARD_COLORS]?.gradient || 'from-slate-500 to-slate-600'}`}
                           />
                         </div>
                         <div className={`text-right mt-1 text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
@@ -434,12 +434,12 @@ export default function InsightsDashboard({ isOpen, onClose }: InsightsDashboard
                 transition={{ delay: 0.6 }}
                 className={`mt-6 p-5 rounded-2xl ${
                   isLight 
-                    ? 'bg-gradient-to-r from-violet-100 via-purple-100 to-indigo-100' 
-                    : 'bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20'
+                    ? 'bg-linear-to-r from-violet-100 via-purple-100 to-indigo-100' 
+                    : 'bg-linear-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20'
                 }`}
               >
                 <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                     isLight ? 'bg-white/80' : 'bg-black/20'
                   }`}>
                     <Sparkles className={`w-6 h-6 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />

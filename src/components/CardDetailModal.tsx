@@ -73,7 +73,7 @@ export default function CardDetailModal({ card, onClose, onEdit, onAddTransactio
         }`}
       >
         {/* Card Header */}
-        <div className={`relative p-6 bg-gradient-to-br ${colorConfig.gradient}`}>
+        <div className={`relative p-6 bg-linear-to-br ${colorConfig.gradient}`}>
           <div className="absolute inset-0 opacity-30">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/20 rounded-full blur-2xl" />

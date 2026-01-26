@@ -8,6 +8,8 @@ export interface CreditCard {
   dueDate: number; // Day of month (1-31)
   statementDate: number; // Day of month when statement is generated
   color: CardColor;
+  pattern?: string;
+  paymentDueDays?: number; // Days after statement date
   createdAt: string;
 }
 
@@ -19,10 +21,11 @@ export interface Transaction {
   category: TransactionCategory;
   date: string;
   isPayment: boolean; // true if this is a payment to the card
+  isPaid?: boolean; // true if this expense has been paid off
   createdAt: string;
 }
 
-export type CardColor = 
+export type CardColor =
   | 'purple'
   | 'blue'
   | 'emerald'
@@ -134,7 +137,7 @@ export const CATEGORY_CONFIG: Record<TransactionCategory, { icon: string; label:
 // BONUS TRACKING TYPES
 // ============================================
 
-export type BonusRuleType = 
+export type BonusRuleType =
   | 'minimum_spend'      // Must spend X to qualify for bonus
   | 'bonus_cap'          // Bonus stops after X spend
   | 'merchant_count'     // Must use X different merchants
@@ -144,7 +147,7 @@ export type MerchantMatchMode = 'exact' | 'contains' | 'regex';
 
 export type RewardUnit = 'cashback' | 'points' | 'miles';
 
-export type BonusStatus = 
+export type BonusStatus =
   | 'inactive'           // Not tracking
   | 'below_minimum'      // Haven't hit minimum spend
   | 'in_sweet_spot'      // In the optimal range
@@ -158,30 +161,30 @@ export interface CardBonusRule {
   name: string;
   description?: string;
   isActive: boolean;
-  
+
   // Rule Thresholds
   minSpend?: number;              // Minimum to qualify (e.g., 800)
   maxBonusSpend?: number;         // Cap on bonus-earning spend (e.g., 822.86)
   minMerchantCount?: number;      // Required unique merchants (e.g., 4)
-  
+
   // Merchant Matching
   qualifyingMerchants: string[];  // Merchant names that qualify
   merchantMatchMode: MerchantMatchMode;
-  
+
   // Category Matching (alternative to merchants)
   qualifyingCategories?: TransactionCategory[];
-  
+
   // Exclusions
   excludeKeywords: string[];      // e.g., ["voucher", "gift card"]
   excludePayments: boolean;       // Exclude card payments
-  
+
   // Reward Calculation
   bonusRate: number;              // e.g., 0.18 for 18%
   baseRate: number;               // e.g., 0.05 for 5%
   rewardUnit: RewardUnit;
   pointsToMilesRatio?: number;    // e.g., 3.6 (360 points = 100 miles) - for intermediate calculation
   milesPerDollar?: number;        // e.g., 10 (direct mpd when qualified) - preferred for display
-  
+
   // Metadata
   createdAt: string;
   updatedAt: string;
@@ -191,32 +194,32 @@ export interface CardBonusRule {
 export interface BonusProgress {
   cardId: string;
   period: string;                 // "2025-11" (YYYY-MM)
-  
+
   // Spending Totals
   totalSpend: number;             // All card spending
   qualifyingSpend: number;        // Only bonus-eligible spend
   nonQualifyingSpend: number;     // Spend that doesn't count
-  
+
   // Merchant Tracking
   merchantsUsed: string[];        // Unique qualifying merchants used
   merchantCount: number;
-  
+
   // Rule Status
   minSpendMet: boolean;
   bonusCapReached: boolean;
   merchantRequirementMet: boolean;
-  
+
   // Calculations
   remainingToMinimum: number;     // $ needed to hit minimum
   remainingToCap: number;         // $ before hitting cap
-  
+
   // Estimated Rewards
   estimatedBonus: number;         // In reward units
   estimatedMiles?: number;        // Converted to miles if applicable
-  
+
   // Overall Status
   status: BonusStatus;
-  
+
   // Recommendations
   recommendations: string[];
 }
@@ -226,27 +229,27 @@ export interface CardProfile {
   id: string;
   bankName: string;
   cardName: string;
-  
+
   // Version Control
   version: string;               // "2025-10"
   effectiveDate: string;         // When rules took effect
   lastUpdated: string;
-  
+
   // Sources
   officialTncUrl?: string;
   reviewUrl?: string;
-  
+
   // Pre-configured Rules (without id/cardId - will be generated)
   bonusRules: Omit<CardBonusRule, 'id' | 'cardId' | 'createdAt' | 'updatedAt'>[];
-  
+
   // Card Info
   annualFee: number;
   feeWaiverSpend?: number;
   incomeRequirement?: number;
-  
+
   // Tips
   tips?: string[];
-  
+
   // Card appearance
   suggestedColor: CardColor;
 }
@@ -260,19 +263,19 @@ export interface SwipeExport {
   version: string;               // Export format version
   appVersion: string;            // Swipe app version
   exportedAt: string;            // ISO timestamp
-  
+
   // Core Data
   cards: CreditCard[];
   transactions: Transaction[];
-  
+
   // Bonus Configuration
   bonusRules: CardBonusRule[];
-  
+
   // Settings
   settings: {
     theme: 'dark' | 'light';
   };
-  
+
   // Statistics (for reference, not imported)
   stats?: {
     totalCards: number;

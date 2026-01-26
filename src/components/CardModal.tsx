@@ -192,13 +192,13 @@ export default function CardModal({ card, onClose }: CardModalProps) {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSelectTemplate(profile.id)}
-                    className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
+                    className={`shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
                       isLight 
-                        ? 'bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 hover:border-violet-400' 
-                        : 'bg-gradient-to-r from-violet-500/10 to-indigo-500/10 border border-violet-500/30 hover:border-violet-500/50'
+                        ? 'bg-linear-to-r from-violet-50 to-indigo-50 border border-violet-200 hover:border-violet-400' 
+                        : 'bg-linear-to-r from-violet-500/10 to-indigo-500/10 border border-violet-500/30 hover:border-violet-500/50'
                     }`}
                   >
-                    <div className={`w-6 h-4 rounded bg-gradient-to-br ${CARD_COLORS[profile.suggestedColor].gradient}`} />
+                    <div className={`w-6 h-4 rounded-sm bg-linear-to-br ${CARD_COLORS[profile.suggestedColor].gradient}`} />
                     <span className={`text-xs font-medium whitespace-nowrap ${isLight ? 'text-violet-700' : 'text-violet-300'}`}>
                       {profile.bankName} {profile.cardName}
                     </span>
@@ -236,7 +236,7 @@ export default function CardModal({ card, onClose }: CardModalProps) {
 
           {/* Card Preview - Compact */}
           <div className="px-6 pt-4">
-            <div className={`aspect-[2.2/1] rounded-2xl bg-gradient-to-br ${CARD_COLORS[formData.color].gradient} p-4 relative overflow-hidden`}>
+            <div className={`aspect-[2.2/1] rounded-2xl bg-linear-to-br ${CARD_COLORS[formData.color].gradient} p-4 relative overflow-hidden`}>
               <div className="absolute inset-0 opacity-30">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2" />
               </div>
@@ -376,7 +376,7 @@ export default function CardModal({ card, onClose }: CardModalProps) {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setFormData({ ...formData, color })}
-                    className={`w-8 h-8 rounded-lg bg-gradient-to-br ${CARD_COLORS[color].gradient} flex items-center justify-center transition-all ${
+                    className={`w-8 h-8 rounded-lg bg-linear-to-br ${CARD_COLORS[color].gradient} flex items-center justify-center transition-all ${
                       formData.color === color 
                         ? `ring-2 ring-violet-500 ${isLight ? 'ring-offset-1 ring-offset-white' : 'ring-offset-1 ring-offset-zinc-900'}` 
                         : ''
@@ -422,7 +422,7 @@ export default function CardModal({ card, onClose }: CardModalProps) {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 font-medium transition-colors text-white text-sm shadow-lg shadow-violet-500/25"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 font-medium transition-colors text-white text-sm shadow-lg shadow-violet-500/25"
               >
                 {card ? 'Save Changes' : 'Add Card'}
               </motion.button>

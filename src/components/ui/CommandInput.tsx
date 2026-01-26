@@ -11,46 +11,47 @@ interface CommandInputProps {
 export const CommandInput: React.FC<CommandInputProps> = ({ onOpenManual }) => {
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const { cards, addTransaction, layoutMode } = useStore();
+  const { cards, addTransaction } = useStore();
   const inputRef = useRef<HTMLInputElement>(null);
-  const isDesktop = layoutMode === 'desktop';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const parts = input.trim().split(' ');
-    
+
     let matchedCardId = cards[0]?.id;
     let amount = 0;
     let description = '';
 
     if (!isNaN(parseFloat(parts[0]))) {
-        amount = parseFloat(parts[0]);
-        
-        const rest = parts.slice(1).join(' ').toLowerCase();
-        const foundCard = cards.find(c => rest.includes(c.name.toLowerCase()) || rest.includes(c.bank.toLowerCase()));
-        if (foundCard) matchedCardId = foundCard.id;
-        
-        description = parts.slice(1).join(' ');
+      amount = parseFloat(parts[0]);
+
+      const rest = parts.slice(1).join(' ').toLowerCase();
+      const foundCard = cards.find(c => rest.includes(c.cardName.toLowerCase()) || rest.includes(c.bankName.toLowerCase()));
+      if (foundCard) matchedCardId = foundCard.id;
+
+      description = parts.slice(1).join(' ');
     } else {
-        description = input;
+      description = input;
     }
 
     if (matchedCardId) {
-        addTransaction({
-            cardId: matchedCardId,
-            amount: amount || 0,
-            description: description || input,
-            category: 'General'
-        });
-        setInput('');
-        inputRef.current?.blur();
+      addTransaction({
+        cardId: matchedCardId,
+        amount: amount || 0,
+        description: description || input,
+        category: 'other',
+        date: new Date().toISOString(),
+        isPayment: false
+      });
+      setInput('');
+      inputRef.current?.blur();
     }
   };
 
   return (
-    <div className={`fixed bottom-6 z-50 ${isDesktop ? 'left-1/2 -translate-x-1/2 w-full max-w-xl px-4' : 'left-4 right-4 max-w-md mx-auto'}`}>
+    <div className="fixed bottom-6 z-50 left-4 right-4 max-w-md mx-auto md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl md:px-4">
       <motion.form
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -67,7 +68,7 @@ export const CommandInput: React.FC<CommandInputProps> = ({ onOpenManual }) => {
         >
           <CardIcon size={20} />
         </button>
-        
+
         <input
           ref={inputRef}
           type="text"
@@ -76,21 +77,21 @@ export const CommandInput: React.FC<CommandInputProps> = ({ onOpenManual }) => {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder='Type "25 Lunch DBS"...'
-          className="flex-1 bg-transparent border-none outline-none px-4 text-text-primary placeholder:text-text-muted font-medium"
+          className="flex-1 bg-transparent border-none outline-hidden px-4 text-text-primary placeholder:text-text-muted font-medium"
         />
 
         <AnimatePresence>
-            {input.length > 0 && (
-                <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    type="submit"
-                    className="p-3 bg-brand-blue text-white rounded-full shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors"
-                >
-                    <Send size={18} />
-                </motion.button>
-            )}
+          {input.length > 0 && (
+            <motion.button
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              type="submit"
+              className="p-3 bg-brand-blue text-white rounded-full shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors"
+            >
+              <Send size={18} />
+            </motion.button>
+          )}
         </AnimatePresence>
       </motion.form>
     </div>

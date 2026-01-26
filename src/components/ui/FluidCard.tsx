@@ -35,7 +35,7 @@ export const FluidCard: React.FC<FluidCardProps> = ({ card, balance, onClick, la
       whileTap={!minimal ? { scale: 0.96 } : {}}
       className={cn(
         "relative w-full aspect-[1.586/1] rounded-2xl p-6 text-white shadow-floating overflow-hidden transition-all duration-300",
-        "bg-gradient-to-br",
+        "bg-linear-to-br",
         bankGradients[card.color] || bankGradients.black,
         minimal ? "cursor-default" : "cursor-pointer"
       )}
@@ -45,43 +45,43 @@ export const FluidCard: React.FC<FluidCardProps> = ({ card, balance, onClick, la
       <CardPatternOverlay pattern={card.pattern} />
 
       {/* Glossy Shine Effect - Animated */}
-      <div className="absolute -inset-full top-0 block w-1/2 -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 left-[-100%] animate-shine" />
-      
+      <div className="absolute -inset-full top-0 block w-1/2 -skew-x-12 bg-linear-to-r from-transparent to-white opacity-20 -left-full animate-shine" />
+
       <div className="relative z-10 flex flex-col justify-between h-full">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="font-bold text-xl tracking-tight drop-shadow-md">{card.name}</h3>
-            <p className="text-white/70 text-sm font-medium drop-shadow-sm">{card.bank}</p>
+            <h3 className="font-bold text-xl tracking-tight drop-shadow-md">{card.cardName}</h3>
+            <p className="text-white/70 text-sm font-medium drop-shadow-xs">{card.bankName}</p>
           </div>
           {!minimal && (
-             <div className="text-right">
-                <p className="text-xs font-medium text-white/80 uppercase tracking-wider mb-0.5">Current Due</p>
-                <p className="text-2xl font-bold tracking-tight drop-shadow-md">{formatCurrency(balance)}</p>
+            <div className="text-right">
+              <p className="text-xs font-medium text-white/80 uppercase tracking-wider mb-0.5">Current Due</p>
+              <p className="text-2xl font-bold tracking-tight drop-shadow-md">{formatCurrency(balance)}</p>
             </div>
           )}
         </div>
 
         <div className="flex justify-between items-end">
           <div>
-            <p className="font-mono text-sm text-white/80 mb-2 tracking-widest drop-shadow-sm">•••• •••• •••• {card.last4}</p>
-            
+            <p className="font-mono text-sm text-white/80 mb-2 tracking-widest drop-shadow-xs">•••• •••• •••• {card.lastFourDigits}</p>
+
             {!minimal && (
-                <div className={cn(
-                "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border border-white/20 shadow-sm",
-                status === 'good' ? "bg-emerald-500/30 text-emerald-50" : 
-                status === 'warning' ? "bg-yellow-500/30 text-yellow-50" : 
-                "bg-red-500/40 text-red-50"
-                )}>
+              <div className={cn(
+                "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border border-white/20 shadow-xs",
+                status === 'good' ? "bg-emerald-500/30 text-emerald-50" :
+                  status === 'warning' ? "bg-yellow-500/30 text-yellow-50" :
+                    "bg-red-500/40 text-red-50"
+              )}>
                 {daysUntilDue < 0 ? `Overdue ${Math.abs(daysUntilDue)}d` : `${daysUntilDue} days left`}
-                </div>
+              </div>
             )}
           </div>
-          
+
           {!minimal && (
-              <div className="text-right">
-                 <p className="text-xs text-white/60 mb-0.5">Due Date</p>
-                 <p className="text-base font-semibold drop-shadow-sm">{dueDate.toLocaleDateString('en-SG', { month: 'short', day: 'numeric' })}</p>
-              </div>
+            <div className="text-right">
+              <p className="text-xs text-white/60 mb-0.5">Due Date</p>
+              <p className="text-base font-semibold drop-shadow-xs">{dueDate.toLocaleDateString('en-SG', { month: 'short', day: 'numeric' })}</p>
+            </div>
           )}
         </div>
       </div>

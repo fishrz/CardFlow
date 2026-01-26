@@ -287,7 +287,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     isLight ? 'bg-emerald-50 border border-emerald-200' : 'bg-emerald-500/10 border border-emerald-500/30'
                   }`}>
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full overflow-hidden flex-shrink-0 ${
+                      <div className={`w-10 h-10 rounded-full overflow-hidden shrink-0 ${
                         isLight ? 'bg-emerald-100' : 'bg-emerald-500/20'
                       }`}>
                         {user?.picture ? (
@@ -377,7 +377,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                             }
                           }}
                           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white ${
-                            'bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25'
+                            'bg-linear-to-r from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25'
                           }`}
                         >
                           <Cloud className="w-4 h-4" />
@@ -437,7 +437,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                       whileTap={{ scale: 0.98 }}
                       onClick={handleExport}
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white ${
-                        'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25'
+                        'bg-linear-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25'
                       }`}
                     >
                       <FileJson className="w-4 h-4" />

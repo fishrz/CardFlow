@@ -160,7 +160,7 @@ export default function AnnualFeeTracker({ isOpen, onClose }: AnnualFeeTrackerPr
           }`}>
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                isLight ? 'bg-gradient-to-br from-rose-100 to-orange-100' : 'bg-gradient-to-br from-rose-500/20 to-orange-500/20'
+                isLight ? 'bg-linear-to-br from-rose-100 to-orange-100' : 'bg-linear-to-br from-rose-500/20 to-orange-500/20'
               }`}>
                 <Receipt className={`w-6 h-6 ${isLight ? 'text-rose-600' : 'text-rose-400'}`} />
               </div>
@@ -297,7 +297,7 @@ export default function AnnualFeeTracker({ isOpen, onClose }: AnnualFeeTrackerPr
                     >
                       <div className="flex items-start gap-4">
                         {/* Card Visual */}
-                        <div className={`w-20 h-12 rounded-xl bg-gradient-to-br ${CARD_COLORS[analysis.card.color].gradient} p-2 flex-shrink-0 flex flex-col justify-between`}>
+                        <div className={`w-20 h-12 rounded-xl bg-linear-to-br ${CARD_COLORS[analysis.card.color].gradient} p-2 shrink-0 flex flex-col justify-between`}>
                           <div className="text-white/80 text-[8px] truncate">{analysis.card.bankName}</div>
                           <div className="text-white text-[9px]">•••• {analysis.card.lastFourDigits}</div>
                         </div>

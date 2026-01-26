@@ -36,7 +36,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex justify-center items-center bg-black/30 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex justify-center items-center bg-black/30 backdrop-blur-sm"
       onClick={onClose}
     >
       {/* Modal Container - Wider for desktop */}
@@ -50,7 +50,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
           w-full bg-surface-ground flex flex-col shadow-2xl overflow-hidden
           ${isDesktop 
             ? 'max-w-2xl max-h-[85vh] rounded-3xl m-4' 
-            : 'max-w-md h-full md:h-[850px] md:rounded-[2rem]'
+            : 'max-w-md h-full md:h-[850px] md:rounded-4xl'
           }
         `}
       >
@@ -58,7 +58,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
           <div className="flex justify-between items-center p-6 border-b border-gray-100">
             <button 
                 onClick={onClose}
-                className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors"
+                className="p-2 bg-white rounded-full shadow-xs hover:bg-gray-100 transition-colors"
             >
                 <X size={24} className="text-text-primary" />
             </button>
@@ -86,15 +86,15 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
                 {/* Stats Row for Desktop */}
                 {isDesktop && (
                   <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-xs">
                       <p className="text-text-secondary text-xs mb-1">Current Due</p>
                       <p className="text-xl font-bold text-text-primary">{formatCurrency(balance)}</p>
                     </div>
-                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-xs">
                       <p className="text-text-secondary text-xs mb-1">Credit Limit</p>
                       <p className="text-xl font-bold text-text-primary">{formatCurrency(card.creditLimit)}</p>
                     </div>
-                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-xs">
                       <p className="text-text-secondary text-xs mb-1">Transactions</p>
                       <p className="text-xl font-bold text-text-primary">{cardTransactions.length}</p>
                     </div>
@@ -111,7 +111,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
                                 handleQuickAdd(parseFloat(amount), desc);
                             }
                         }}
-                        className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-transform hover:shadow-md"
+                        className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-xs active:scale-95 transition-transform hover:shadow-md"
                     >
                         <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue mb-2">
                             <Plus size={24} />
@@ -120,7 +120,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
                     </button>
 
                     <button 
-                        className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-transform hover:shadow-md"
+                        className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-xs active:scale-95 transition-transform hover:shadow-md"
                     >
                         <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mb-2">
                             <Calendar size={24} />
@@ -140,7 +140,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
                                 key={t.id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                                className="flex items-center justify-between p-4 bg-white rounded-xl shadow-xs hover:shadow-md transition-shadow"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`w-2 h-2 rounded-full ${t.isPaid ? 'bg-green-500' : 'bg-orange-500'}`} />

@@ -38,7 +38,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({ children, className }) =
             </div>
 
             {/* Bottom fade for scrolling */}
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-surface-ground to-transparent pointer-events-none z-10 md:rounded-b-[2.5rem]" />
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-surface-ground to-transparent pointer-events-none z-10 md:rounded-b-[2.5rem]" />
         </motion.div>
       </div>
     );
@@ -71,7 +71,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({ children, className }) =
 // Layout Toggle Component
 const LayoutToggle: React.FC<{ mode: 'phone' | 'desktop', onToggle: (mode: 'phone' | 'desktop') => void }> = ({ mode, onToggle }) => {
   return (
-    <div className="fixed top-4 right-4 z-[200] flex items-center gap-1 bg-white/80 backdrop-blur-lg rounded-full p-1 shadow-lg border border-gray-200">
+    <div className="fixed top-4 right-4 z-200 flex items-center gap-1 bg-white/80 backdrop-blur-lg rounded-full p-1 shadow-lg border border-gray-200">
       <button
         onClick={() => onToggle('desktop')}
         className={cn(

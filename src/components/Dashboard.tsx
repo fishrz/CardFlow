@@ -103,7 +103,7 @@ export default function Dashboard({
                 transition={{ delay: 0.3, type: 'spring', stiffness: 100 }}
                 className="flex items-center gap-3 mb-2 min-w-0"
               >
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gradient">Swipe</h1>
@@ -113,7 +113,7 @@ export default function Dashboard({
               </p>
             </div>
             
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
               {/* Command Palette Trigger */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -158,14 +158,14 @@ export default function Dashboard({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onAddCard}
-                className="hidden md:flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-violet-500/25 text-white"
+                className="hidden md:flex items-center gap-2 px-5 py-3 rounded-2xl bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-violet-500/25 text-white"
               >
                 <Plus className="w-5 h-5" />
                 <span className="font-medium">Add Card</span>
               </motion.button>
 
               {/* Mobile: progressive disclosure (More) + primary actions */}
-              <div className="md:hidden flex items-center gap-2 flex-shrink-0">
+              <div className="md:hidden flex items-center gap-2 shrink-0">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -185,7 +185,7 @@ export default function Dashboard({
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleRecord}
-                  className="flex items-center gap-2 px-4 py-2.5 max-[420px]:px-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 shadow-lg shadow-emerald-500/25 text-white"
+                  className="flex items-center gap-2 px-4 py-2.5 max-[420px]:px-3 rounded-2xl bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 shadow-lg shadow-emerald-500/25 text-white"
                   aria-label="Record transaction"
                 >
                   <Pencil className="w-5 h-5" />
@@ -218,7 +218,7 @@ export default function Dashboard({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 z-[95]"
+              className="md:hidden fixed inset-0 z-95"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <motion.div
@@ -533,7 +533,7 @@ export default function Dashboard({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleRecord}
-          className="md:hidden fixed bottom-6 right-6 h-14 px-5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 z-50"
+          className="md:hidden fixed bottom-6 right-6 h-14 px-5 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 z-50"
         >
           <Pencil className="w-6 h-6 text-white" />
           <span className="text-sm font-semibold text-white">Record</span>

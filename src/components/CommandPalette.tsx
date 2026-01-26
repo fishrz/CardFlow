@@ -430,7 +430,7 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4"
+        className="fixed inset-0 z-100 flex items-start justify-center pt-[15vh] px-4"
         onClick={onClose}
       >
         {/* Backdrop */}
@@ -470,7 +470,7 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder='Type "lunch 25 dbs" or "pay 500 ocbc"...'
-              className={`flex-1 bg-transparent border-none outline-none text-lg ${
+              className={`flex-1 bg-transparent border-none outline-hidden text-lg ${
                 isLight ? 'text-slate-900 placeholder:text-slate-400' : 'text-white placeholder:text-zinc-500'
               }`}
             />
@@ -555,8 +555,8 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
                       onClick={handleSubmit}
                       className={`px-4 py-2 rounded-xl font-medium text-white transition-all ${
                         parsedCommand.type === 'payment'
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25'
-                          : 'bg-gradient-to-r from-violet-500 to-indigo-500 shadow-lg shadow-violet-500/25'
+                          ? 'bg-linear-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25'
+                          : 'bg-linear-to-r from-violet-500 to-indigo-500 shadow-lg shadow-violet-500/25'
                       }`}
                     >
                       <Zap className="w-4 h-4" />
@@ -650,8 +650,8 @@ export default function CommandPalette({ isOpen, onClose, onOpenInsights, onOpen
             isLight ? 'border-slate-200 bg-slate-50 text-slate-500' : 'border-white/10 bg-white/5 text-zinc-500'
           }`}>
             <div className="flex items-center gap-4">
-              <span><kbd className={`px-1.5 py-0.5 rounded ${isLight ? 'bg-slate-200' : 'bg-white/10'}`}>↵</kbd> to submit</span>
-              <span><kbd className={`px-1.5 py-0.5 rounded ${isLight ? 'bg-slate-200' : 'bg-white/10'}`}>↑↓</kbd> to navigate</span>
+              <span><kbd className={`px-1.5 py-0.5 rounded-sm ${isLight ? 'bg-slate-200' : 'bg-white/10'}`}>↵</kbd> to submit</span>
+              <span><kbd className={`px-1.5 py-0.5 rounded-sm ${isLight ? 'bg-slate-200' : 'bg-white/10'}`}>↑↓</kbd> to navigate</span>
             </div>
             <span>⌘K to open anytime</span>
           </div>

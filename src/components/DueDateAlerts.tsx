@@ -231,7 +231,7 @@ export default function DueDateAlerts({ isOpen, onClose }: DueDateAlertsProps) {
                     >
                       <div className="flex items-start gap-4">
                         {/* Card Visual */}
-                        <div className={`w-16 h-10 rounded-lg bg-gradient-to-br ${CARD_COLORS[alert.card.color].gradient} p-2 flex-shrink-0`}>
+                        <div className={`w-16 h-10 rounded-lg bg-linear-to-br ${CARD_COLORS[alert.card.color].gradient} p-2 shrink-0`}>
                           <div className="text-white/80 text-[8px] truncate">{alert.card.bankName}</div>
                         </div>
                         
@@ -303,8 +303,8 @@ export default function DueDateAlerts({ isOpen, onClose }: DueDateAlertsProps) {
                               onClick={() => handlePayNow(alert)}
                               className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-white ${
                                 alert.urgency === 'critical'
-                                  ? 'bg-gradient-to-r from-red-500 to-rose-500'
-                                  : 'bg-gradient-to-r from-emerald-500 to-teal-500'
+                                  ? 'bg-linear-to-r from-red-500 to-rose-500'
+                                  : 'bg-linear-to-r from-emerald-500 to-teal-500'
                               } shadow-lg ${
                                 alert.urgency === 'critical' 
                                   ? 'shadow-red-500/25' 

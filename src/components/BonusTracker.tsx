@@ -174,7 +174,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
           }`}>
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                isLight ? 'bg-gradient-to-br from-emerald-100 to-cyan-100' : 'bg-gradient-to-br from-emerald-500/20 to-cyan-500/20'
+                isLight ? 'bg-linear-to-br from-emerald-100 to-cyan-100' : 'bg-linear-to-br from-emerald-500/20 to-cyan-500/20'
               }`}>
                 <Target className={`w-6 h-6 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
               </div>
@@ -224,7 +224,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                         {/* Card Header */}
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-12 h-8 rounded-lg bg-gradient-to-br ${CARD_COLORS[card.color].gradient}`} />
+                            <div className={`w-12 h-8 rounded-lg bg-linear-to-br ${CARD_COLORS[card.color].gradient}`} />
                             <div>
                               <h4 className="font-semibold">{card.bankName} {card.cardName}</h4>
                               <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
@@ -252,12 +252,12 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                               transition={{ duration: 0.5, ease: 'easeOut' }}
                               className={`h-full rounded-full ${
                                 progress.status === 'over_cap'
-                                  ? 'bg-gradient-to-r from-rose-500 to-red-500'
+                                  ? 'bg-linear-to-r from-rose-500 to-red-500'
                                   : progress.status === 'at_cap'
-                                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500'
+                                  ? 'bg-linear-to-r from-cyan-500 to-blue-500'
                                   : progress.status === 'in_sweet_spot'
-                                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                                  : 'bg-gradient-to-r from-amber-500 to-orange-500'
+                                  ? 'bg-linear-to-r from-emerald-500 to-teal-500'
+                                  : 'bg-linear-to-r from-amber-500 to-orange-500'
                               }`}
                             />
                           </div>
@@ -435,7 +435,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-6 rounded-lg bg-gradient-to-br ${CARD_COLORS[card.color].gradient}`} />
+                        <div className={`w-10 h-6 rounded-lg bg-linear-to-br ${CARD_COLORS[card.color].gradient}`} />
                         <div>
                           <p className="font-medium text-sm">{card.bankName}</p>
                           <p className={`text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
@@ -486,7 +486,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+              className="fixed inset-0 z-60 flex items-center justify-center p-4"
               onClick={() => setShowProfileSelector(false)}
             >
               <motion.div
@@ -547,7 +547,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
               onClick={() => setEditingRuleId(null)}
             >
               <motion.div
@@ -602,7 +602,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                       isLight 
                         ? 'bg-slate-100 border border-slate-200 focus:border-violet-400' 
                         : 'bg-white/5 border border-white/10 focus:border-violet-500'
-                    } outline-none transition-colors`}
+                    } outline-hidden transition-colors`}
                   />
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -611,7 +611,7 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                     disabled={!newMerchant.trim()}
                     className={`px-4 py-3 rounded-xl font-medium ${
                       newMerchant.trim()
-                        ? 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-lg shadow-violet-500/25'
+                        ? 'bg-linear-to-r from-violet-500 to-indigo-500 text-white shadow-lg shadow-violet-500/25'
                         : isLight ? 'bg-slate-200 text-slate-400' : 'bg-white/10 text-zinc-500'
                     } transition-all`}
                   >
@@ -677,8 +677,8 @@ export default function BonusTracker({ isOpen, onClose }: BonusTrackerProps) {
                   onClick={() => setEditingRuleId(null)}
                   className={`w-full mt-4 px-4 py-3 rounded-xl font-semibold ${
                     isLight 
-                      ? 'bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-700 hover:from-violet-200 hover:to-indigo-200' 
-                      : 'bg-gradient-to-r from-violet-500/20 to-indigo-500/20 text-violet-300 hover:from-violet-500/30 hover:to-indigo-500/30'
+                      ? 'bg-linear-to-r from-violet-100 to-indigo-100 text-violet-700 hover:from-violet-200 hover:to-indigo-200' 
+                      : 'bg-linear-to-r from-violet-500/20 to-indigo-500/20 text-violet-300 hover:from-violet-500/30 hover:to-indigo-500/30'
                   } transition-all`}
                 >
                   Done

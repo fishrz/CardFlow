@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
             Credit<span className="text-brand-blue">Flow</span>
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+        <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-xs">
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
         </div>
       </motion.div>

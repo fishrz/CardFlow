@@ -172,7 +172,7 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
               onClick={() => setFormData({ ...formData, isPayment: false })}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-medium transition-all ${
                 !formData.isPayment 
-                  ? (isLight ? 'bg-white shadow-sm text-rose-600' : 'bg-rose-500/20 text-rose-400')
+                  ? (isLight ? 'bg-white shadow-xs text-rose-600' : 'bg-rose-500/20 text-rose-400')
                   : (isLight ? 'text-slate-500 hover:text-slate-700' : 'text-zinc-400 hover:text-zinc-300')
               }`}
             >
@@ -186,7 +186,7 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
               onClick={() => setFormData({ ...formData, isPayment: true })}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-medium transition-all ${
                 formData.isPayment 
-                  ? (isLight ? 'bg-white shadow-sm text-emerald-600' : 'bg-emerald-500/20 text-emerald-400')
+                  ? (isLight ? 'bg-white shadow-xs text-emerald-600' : 'bg-emerald-500/20 text-emerald-400')
                   : (isLight ? 'text-slate-500 hover:text-slate-700' : 'text-zinc-400 hover:text-zinc-300')
               }`}
             >
@@ -218,7 +218,7 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
                       : (isLight ? 'bg-slate-100 hover:bg-slate-200' : 'bg-white/5 hover:bg-white/10')
                   }`}
                 >
-                  <div className={`w-8 h-5 rounded bg-gradient-to-r ${CARD_COLORS[card.color].gradient} mb-2`} />
+                  <div className={`w-8 h-5 rounded-sm bg-linear-to-r ${CARD_COLORS[card.color].gradient} mb-2`} />
                   <p className="text-sm font-medium truncate">{card.bankName}</p>
                   <p className={`text-xs truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
                     •••• {card.lastFourDigits}
@@ -252,8 +252,8 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
                   onClick={handlePayFullBalance}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     isLight 
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40' 
-                      : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                      ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40' 
+                      : 'bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
@@ -362,8 +362,8 @@ export default function TransactionModal({ preselectedCardId, onClose, editTrans
               whileTap={{ scale: 0.98 }}
               className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors text-white ${
                 formData.isPayment
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500'
-                  : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500'
+                  ? 'bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500'
+                  : 'bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500'
               }`}
             >
               {isEditing 

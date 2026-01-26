@@ -56,7 +56,7 @@ export default function UpcomingPayments({ payments, onViewCard, onAddTransactio
             }`}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className={`w-10 h-6 rounded-md bg-gradient-to-r ${colorConfig.gradient}`} />
+              <div className={`w-10 h-6 rounded-md bg-linear-to-r ${colorConfig.gradient}`} />
               <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${urgency.bg} ${urgency.text}`}>
                 {urgency.label}
               </span>

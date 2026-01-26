@@ -48,7 +48,7 @@ export default function CreditCardComponent({ card, index, onClick, onEdit, onAd
       onClick={onClick}
     >
       {/* Card Container */}
-      <div className={`aspect-[1.6/1] rounded-3xl bg-gradient-to-br ${colorConfig.gradient} p-6 relative overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-500`}>
+      <div className={`aspect-[1.6/1] rounded-3xl bg-linear-to-br ${colorConfig.gradient} p-6 relative overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-500`}>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />

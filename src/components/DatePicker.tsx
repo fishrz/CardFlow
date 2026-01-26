@@ -128,7 +128,7 @@ export default function DatePicker({ value, onChange, label, className = '' }: D
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className={`fixed z-[100] p-4 rounded-2xl shadow-2xl ${
+          className={`fixed z-100 p-4 rounded-2xl shadow-2xl ${
             isLight 
               ? 'bg-white border border-slate-200 shadow-slate-200/50' 
               : 'bg-zinc-900 border border-white/10 shadow-black/50'
@@ -209,7 +209,7 @@ export default function DatePicker({ value, onChange, label, className = '' }: D
                       : ''
                     }
                     ${isSelected 
-                      ? 'bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/30' 
+                      ? 'bg-linear-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/30' 
                       : isCurrentMonth 
                         ? (isLight ? 'hover:bg-slate-100' : 'hover:bg-white/10')
                         : ''

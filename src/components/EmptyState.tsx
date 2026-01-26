@@ -27,7 +27,7 @@ export default function EmptyState({ onAddCard }: EmptyStateProps) {
           transition={{
             y: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
           }}
-          className="absolute left-0 top-8 w-48 h-28 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 opacity-60"
+          className="absolute left-0 top-8 w-48 h-28 rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 opacity-60"
         />
         <motion.div
           animate={{
@@ -37,7 +37,7 @@ export default function EmptyState({ onAddCard }: EmptyStateProps) {
           transition={{
             y: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 },
           }}
-          className="absolute right-0 top-4 w-48 h-28 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-500 opacity-60"
+          className="absolute right-0 top-4 w-48 h-28 rounded-2xl bg-linear-to-br from-cyan-500 to-teal-500 opacity-60"
         />
         <motion.div
           animate={{
@@ -46,7 +46,7 @@ export default function EmptyState({ onAddCard }: EmptyStateProps) {
           transition={{
             y: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.4 },
           }}
-          className="absolute left-1/2 top-0 -translate-x-1/2 w-52 h-32 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center"
+          className="absolute left-1/2 top-0 -translate-x-1/2 w-52 h-32 rounded-2xl bg-linear-to-br from-rose-500 to-pink-500 flex items-center justify-center"
         >
           <CreditCard className="w-12 h-12 text-white/80" />
         </motion.div>
@@ -71,7 +71,7 @@ export default function EmptyState({ onAddCard }: EmptyStateProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onAddCard}
-        className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-xl shadow-violet-500/25 text-white"
+        className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 shadow-xl shadow-violet-500/25 text-white"
       >
         <Plus className="w-6 h-6" />
         <span className="text-lg font-semibold">Add Your First Card</span>

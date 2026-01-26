@@ -75,7 +75,7 @@ export default function StatsCard({ title, value, subtitle, icon, color, showPro
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(progress, 100)}%` }}
               transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-              className={`h-full bg-gradient-to-r ${colors.progress} rounded-full`}
+              className={`h-full bg-linear-to-r ${colors.progress} rounded-full`}
             />
           </div>
         </div>

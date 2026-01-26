@@ -44,12 +44,12 @@ export const DataSettings: React.FC = () => {
       <div className={`flex gap-4 ${isDesktop ? 'max-w-md' : ''}`}>
         <button 
             onClick={handleExport}
-            className="flex-1 flex items-center justify-center gap-2 py-3 bg-white rounded-xl shadow-sm text-text-primary font-medium active:scale-95 transition-transform hover:shadow-md"
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-white rounded-xl shadow-xs text-text-primary font-medium active:scale-95 transition-transform hover:shadow-md"
         >
             <Download size={18} />
             Export
         </button>
-        <label className="flex-1 flex items-center justify-center gap-2 py-3 bg-white rounded-xl shadow-sm text-text-primary font-medium cursor-pointer active:scale-95 transition-transform hover:shadow-md">
+        <label className="flex-1 flex items-center justify-center gap-2 py-3 bg-white rounded-xl shadow-xs text-text-primary font-medium cursor-pointer active:scale-95 transition-transform hover:shadow-md">
             <Upload size={18} />
             Import
             <input type="file" accept=".json" onChange={handleImport} className="hidden" />

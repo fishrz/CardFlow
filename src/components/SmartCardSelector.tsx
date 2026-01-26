@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Sparkles, CreditCard as CardIcon, 
+import {
+  X, Sparkles, CreditCard as CardIcon,
   TrendingUp, Percent, DollarSign, ShoppingBag, Utensils,
   Car, Plane, Film, Zap, HeartPulse, GraduationCap, Wifi
 } from 'lucide-react';
@@ -171,7 +171,7 @@ const CATEGORY_LABELS: Record<TransactionCategory, string> = {
 
 // Helper function to get reward config for a card based on bank name
 function getCardRewardConfig(bankName: string): CardRewardConfig[] {
-  const bankKey = Object.keys(SINGAPORE_CARD_REWARDS).find(key => 
+  const bankKey = Object.keys(SINGAPORE_CARD_REWARDS).find(key =>
     bankName.toUpperCase().includes(key.toUpperCase())
   );
   return SINGAPORE_CARD_REWARDS[bankKey || 'DEFAULT'];
@@ -180,7 +180,7 @@ function getCardRewardConfig(bankName: string): CardRewardConfig[] {
 export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelectorProps) {
   const [selectedCategory, setSelectedCategory] = useState<TransactionCategory | null>(null);
   const [amount, setAmount] = useState<number>(100);
-  
+
   const { cards } = useStore();
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -188,28 +188,34 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
   // Get reward config for each card based on bank name
   const cardRewards = useMemo(() => {
     const rewards: Map<string, CardRewardConfig[]> = new Map();
-    
+
     cards.forEach((card) => {
       const config = getCardRewardConfig(card.bankName);
       rewards.set(card.id, config);
     });
-    
+
     return rewards;
   }, [cards]);
 
   // Get best card for selected category
-  const recommendation = useMemo(() => {
+  const recommendation = useMemo<{
+    card: CreditCard;
+    rate: number;
+    rewardType: 'cashback' | 'miles' | 'points';
+    savings: number;
+    milesPerDollar?: number;
+  } | null>(() => {
     if (!selectedCategory || cards.length === 0) return null;
-    
+
     let bestCard: CreditCard | null = null;
     let bestRate = 0;
     let bestRewardType: 'cashback' | 'miles' | 'points' = 'cashback';
     let bestMilesPerDollar: number | undefined;
-    
+
     cards.forEach(card => {
       const rewards = cardRewards.get(card.id);
       const categoryReward = rewards?.find(r => r.category === selectedCategory);
-      
+
       if (categoryReward && categoryReward.rewardRate > bestRate) {
         bestCard = card;
         bestRate = categoryReward.rewardRate;
@@ -217,16 +223,16 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
         bestMilesPerDollar = categoryReward.milesPerDollar;
       }
     });
-    
+
     if (!bestCard) return null;
-    
+
     // Calculate savings/rewards
     const savings = bestRewardType === 'miles' && bestMilesPerDollar
       ? amount * bestMilesPerDollar // total miles earned
       : (amount * bestRate) / 100;  // cashback amount
-    
+
     return {
-      card: bestCard,
+      card: bestCard!,
       rate: bestRate,
       rewardType: bestRewardType,
       savings,
@@ -237,7 +243,7 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
   // All cards ranked for category
   const rankedCards = useMemo(() => {
     if (!selectedCategory || cards.length === 0) return [];
-    
+
     return cards
       .map(card => {
         const rewards = cardRewards.get(card.id);
@@ -245,12 +251,12 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
         const rewardRate = categoryReward?.rewardRate || 0;
         const rewardType = categoryReward?.rewardType || 'cashback';
         const milesPerDollar = categoryReward?.milesPerDollar;
-        
+
         // Calculate value based on reward type
         const savings = rewardType === 'miles' && milesPerDollar
           ? amount * milesPerDollar // total miles
           : (amount * rewardRate) / 100; // cashback
-        
+
         return {
           card,
           rate: rewardRate,
@@ -275,9 +281,8 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
-          isLight ? 'bg-black/40' : 'bg-black/60'
-        } backdrop-blur-sm`}
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isLight ? 'bg-black/40' : 'bg-black/60'
+          } backdrop-blur-sm`}
         onClick={onClose}
       >
         <motion.div
@@ -286,20 +291,17 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
           onClick={(e) => e.stopPropagation()}
-          className={`w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-3xl ${
-            isLight 
-              ? 'bg-white shadow-2xl shadow-black/10' 
+          className={`w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-3xl ${isLight
+              ? 'bg-white shadow-2xl shadow-black/10'
               : 'glass-strong'
-          }`}
+            }`}
         >
           {/* Header */}
-          <div className={`flex items-center justify-between p-6 border-b ${
-            isLight ? 'border-slate-200' : 'border-white/10'
-          }`}>
+          <div className={`flex items-center justify-between p-6 border-b ${isLight ? 'border-slate-200' : 'border-white/10'
+            }`}>
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                isLight ? 'bg-gradient-to-br from-cyan-100 to-violet-100' : 'bg-gradient-to-br from-cyan-500/20 to-violet-500/20'
-              }`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isLight ? 'bg-linear-to-br from-cyan-100 to-violet-100' : 'bg-linear-to-br from-cyan-500/20 to-violet-500/20'
+                }`}>
                 <Sparkles className={`w-6 h-6 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
               </div>
               <div>
@@ -313,9 +315,8 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                isLight ? 'hover:bg-slate-100' : 'hover:bg-white/10'
-              }`}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isLight ? 'hover:bg-slate-100' : 'hover:bg-white/10'
+                }`}
             >
               <X className={`w-5 h-5 ${isLight ? 'text-slate-400' : 'text-zinc-400'}`} />
             </motion.button>
@@ -337,11 +338,10 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-xl font-semibold ${
-                    isLight 
-                      ? 'bg-slate-100 border border-slate-200 text-slate-900 focus:border-violet-400' 
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-xl font-semibold ${isLight
+                      ? 'bg-slate-100 border border-slate-200 text-slate-900 focus:border-violet-400'
                       : 'bg-white/5 border border-white/10 text-white focus:border-violet-500/50'
-                  } transition-colors`}
+                    } transition-colors`}
                 />
               </div>
             </div>
@@ -358,11 +358,10 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${
-                      selectedCategory === cat
+                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${selectedCategory === cat
                         ? 'ring-2 ring-violet-500 ' + (isLight ? 'bg-violet-50 text-violet-600' : 'bg-violet-500/20 text-violet-400')
                         : (isLight ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' : 'bg-white/5 hover:bg-white/10 text-zinc-400')
-                    }`}
+                      }`}
                   >
                     {CATEGORY_ICONS[cat]}
                     <span className="text-[10px] font-medium truncate w-full text-center">
@@ -381,11 +380,10 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className={`mb-6 p-5 rounded-2xl ${
-                    isLight 
-                      ? 'bg-gradient-to-br from-emerald-50 to-cyan-50 border border-emerald-200' 
-                      : 'bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30'
-                  }`}
+                  className={`mb-6 p-5 rounded-2xl ${isLight
+                      ? 'bg-linear-to-br from-emerald-50 to-cyan-50 border border-emerald-200'
+                      : 'bg-linear-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30'
+                    }`}
                 >
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className={`w-5 h-5 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
@@ -393,10 +391,10 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                       BEST CHOICE
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     {/* Card Visual */}
-                    <div className={`w-24 h-16 rounded-xl bg-gradient-to-br ${CARD_COLORS[recommendation.card.color].gradient} p-3 flex flex-col justify-between`}>
+                    <div className={`w-24 h-16 rounded-xl bg-linear-to-br ${CARD_COLORS[recommendation.card.color].gradient} p-3 flex flex-col justify-between`}>
                       <div className="text-white/80 text-xs font-medium truncate">
                         {recommendation.card.bankName}
                       </div>
@@ -404,7 +402,7 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                         •••• {recommendation.card.lastFourDigits}
                       </div>
                     </div>
-                    
+
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{recommendation.card.cardName || recommendation.card.bankName}</h3>
                       <div className="flex items-center gap-4 mt-1">
@@ -426,7 +424,7 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <p className={`text-2xl font-bold ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>
                         {recommendation.rewardType === 'miles'
@@ -456,11 +454,10 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`flex items-center gap-3 p-3 rounded-xl ${
-                        isLight ? 'bg-slate-50' : 'bg-white/5'
-                      }`}
+                      className={`flex items-center gap-3 p-3 rounded-xl ${isLight ? 'bg-slate-50' : 'bg-white/5'
+                        }`}
                     >
-                      <div className={`w-3 h-3 rounded-full bg-gradient-to-br ${CARD_COLORS[item.card.color].gradient}`} />
+                      <div className={`w-3 h-3 rounded-full bg-linear-to-br ${CARD_COLORS[item.card.color].gradient}`} />
                       <div className="flex-1">
                         <p className="font-medium text-sm">{item.card.bankName}</p>
                         <p className={`text-xs ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
@@ -482,12 +479,11 @@ export default function SmartCardSelector({ isOpen, onClose }: SmartCardSelector
                     </motion.div>
                   ))}
                 </div>
-                
+
                 {/* Savings Comparison */}
                 {recommendation && rankedCards.length > 1 && (
-                  <div className={`mt-4 p-3 rounded-xl ${
-                    isLight ? 'bg-amber-50 border border-amber-200' : 'bg-amber-500/10 border border-amber-500/30'
-                  }`}>
+                  <div className={`mt-4 p-3 rounded-xl ${isLight ? 'bg-amber-50 border border-amber-200' : 'bg-amber-500/10 border border-amber-500/30'
+                    }`}>
                     <p className={`text-sm ${isLight ? 'text-amber-700' : 'text-amber-300'}`}>
                       💡 Using <strong>{recommendation.card.bankName}</strong> instead of <strong>{rankedCards[rankedCards.length - 1].card.bankName}</strong> saves you{' '}
                       <strong>${(recommendation.savings - rankedCards[rankedCards.length - 1].savings).toFixed(2)}</strong> on this purchase!

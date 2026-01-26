@@ -47,13 +47,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-60"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-x-4 top-[10%] bottom-auto md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[400px] bg-white rounded-3xl shadow-2xl z-[70] p-6 overflow-y-auto max-h-[80vh]"
+            className="fixed inset-x-4 top-[10%] bottom-auto md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[400px] bg-white rounded-3xl shadow-2xl z-70 p-6 overflow-y-auto max-h-[80vh]"
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Add New Card</h2>
@@ -67,7 +67,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 <label className="block text-sm font-medium text-text-secondary mb-1">Card Nickname</label>
                 <input
                   required
-                  className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-none"
+                  className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-hidden"
                   placeholder="e.g. DBS Altitude"
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
@@ -79,7 +79,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     <label className="block text-sm font-medium text-text-secondary mb-1">Bank Name</label>
                     <input
                     required
-                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-none"
+                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-hidden"
                     placeholder="DBS"
                     value={formData.bank}
                     onChange={e => setFormData({...formData, bank: e.target.value})}
@@ -90,7 +90,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     <input
                     required
                     maxLength={4}
-                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-none"
+                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-hidden"
                     placeholder="1234"
                     value={formData.last4}
                     onChange={e => setFormData({...formData, last4: e.target.value})}
@@ -106,7 +106,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     min={1}
                     max={31}
                     required
-                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-none"
+                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-hidden"
                     value={formData.statementDate}
                     onChange={e => setFormData({...formData, statementDate: e.target.value})}
                     />
@@ -118,7 +118,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     min={15}
                     max={60}
                     required
-                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-none"
+                    className="w-full p-3 bg-surface-ground rounded-xl border-none focus:ring-2 focus:ring-brand-blue/20 outline-hidden"
                     value={formData.paymentDueDays}
                     onChange={e => setFormData({...formData, paymentDueDays: e.target.value})}
                     />
@@ -148,7 +148,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                             key={pattern}
                             type="button"
                             onClick={() => setFormData({...formData, pattern: pattern as any})}
-                            className={`flex-shrink-0 px-4 py-2 rounded-lg border-2 text-sm capitalize ${
+                            className={`shrink-0 px-4 py-2 rounded-lg border-2 text-sm capitalize ${
                                 formData.pattern === pattern 
                                 ? 'border-brand-blue bg-brand-blue/10 text-brand-blue' 
                                 : 'border-gray-100 bg-gray-50 text-text-secondary'

@@ -1,4 +1,4 @@
-import { addDays, format, getDate, isAfter, isBefore, setDate, startOfDay } from 'date-fns';
+import { addDays, getDate, setDate, startOfDay } from 'date-fns';
 import { CreditCard, Transaction } from '@/types';
 
 export const formatCurrency = (amount: number) => {
@@ -13,7 +13,7 @@ export const formatCurrency = (amount: number) => {
 export const getCardStatus = (card: CreditCard) => {
   const today = startOfDay(new Date());
   const currentDay = getDate(today);
-  
+
   // Determine current statement date
   // If today is before statement date, the current statement started last month
   // If today is after statement date, the current statement started this month
@@ -23,7 +23,7 @@ export const getCardStatus = (card: CreditCard) => {
     lastStatementDate = setDate(new Date(today.getFullYear(), today.getMonth() - 1, 1), card.statementDate);
   }
 
-  const dueDate = addDays(lastStatementDate, card.paymentDueDays);
+  const dueDate = addDays(lastStatementDate, card.paymentDueDays || 20);
   const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
   let status: 'good' | 'warning' | 'danger' = 'good';
